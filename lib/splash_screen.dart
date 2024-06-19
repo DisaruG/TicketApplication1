@@ -16,23 +16,33 @@ class CustomNavigation extends StatefulWidget {
   CustomNavigationState createState() => CustomNavigationState();
 }
 
-class CustomNavigationState extends State<CustomNavigation> with TickerProviderStateMixin {
+class CustomNavigationState extends State<CustomNavigation>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
   late Animation<double> _logoScaleAnimation;
+  late Animation<double> _opacityAnimation;
 
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3));
 
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
-    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     _controller.forward().then((_) {
       _startNameTransition();
@@ -68,29 +78,41 @@ class CustomNavigationState extends State<CustomNavigation> with TickerProviderS
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _opacityAnimation,
-      child: Stack(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
         children: [
           Container(
-            color: Colors.blue, // Background color
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF1565C0), // Dark blue
+                  Color(0xFF42A5F5), // Light blue
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Animated logo
-                AnimatedBuilder(
-                  animation: _logoScaleAnimation,
-                  builder: (context, child) => Transform.scale(
-                    scale: _logoScaleAnimation.value,
-                    child: Image.asset(
-                      widget.companyLogoPath,
-                      height: 150.0, // Adjust logo size as needed
+                FadeTransition(
+                  opacity: _opacityAnimation,
+                  child: AnimatedBuilder(
+                    animation: _logoScaleAnimation,
+                    builder: (context, child) => Transform.scale(
+                      scale: _logoScaleAnimation.value,
+                      child: Image.asset(
+                        widget.companyLogoPath,
+                        height: 150.0,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30.0), // Space between logo and company name
+                const SizedBox(height: 30.0),
 
                 // Animated company names
                 AnimatedSwitcher(
@@ -98,29 +120,27 @@ class CustomNavigationState extends State<CustomNavigation> with TickerProviderS
                   child: Text(
                     widget.companyNames[_currentIndex],
                     key: ValueKey<int>(_currentIndex),
-                    style: TextStyle(
-                      fontSize: 36.0, // Adjust font size
+                    style: const TextStyle(
+                      fontSize: 36.0,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Arial', // Use a custom font if needed
-                      decoration: TextDecoration.none, // Remove underlining
-                      foreground: Paint()..shader = const LinearGradient(
-                        colors: <Color>[Colors.blue, Colors.white],
-                      ).createShader(const Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)), // Gradient effect
-                      shadows: const [
+                      fontFamily: 'Arial',
+                      color: Colors.white,
+                      shadows: [
                         Shadow(
                           blurRadius: 10.0,
                           color: Colors.black54,
                           offset: Offset(3.0, 3.0),
                         ),
-                      ], // Shadow effect
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 100.0), // More space to push the loading animation lower
+
+                const SizedBox(height: 100.0),
 
                 // Loading indicator
                 const CircularProgressIndicator(
-                  color: Colors.white,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ],
             ),
