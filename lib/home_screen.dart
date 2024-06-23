@@ -13,7 +13,7 @@ class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    TasksListScreen(),
+    const TasksListScreen(),
     const ContactsScreen(),
   ];
 
@@ -29,8 +29,10 @@ class HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Task Manager'),
       ),
-      backgroundColor: const Color(0xFF1F2C34), // Set the background color
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -43,10 +45,9 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey, // To ensure clarity between selected and unselected
+        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         onTap: _onItemTapped,
-        backgroundColor: const Color(0xFF1F2C34), // Match the background color for a cohesive look
       ),
     );
   }
