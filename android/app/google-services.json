@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "502594603175",
+    "project_id": "authnew-f163d",
+    "storage_bucket": "authnew-f163d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502594603175:android:0474b446dcb3b0af103382",
+        "android_client_info": {
+          "package_name": "com.example.ticketapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-89KBZOWLt1GxBG-HI5Q2_sPWspjpdfw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

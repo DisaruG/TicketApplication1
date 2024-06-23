@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:ticketapplication/splash_screen.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
 
-void main() {
+import 'firebase_options.dart';
+import 'home.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -13,15 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Task Manager',
+      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const CustomNavigation(companyLogoPath: "lib/assets/rdbbanklogo.jpg", companyNames: ["RDB Tickets"], nextScreen: LoginScreen()),
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
-      },
+      home: const Home(),
     );
   }
 }

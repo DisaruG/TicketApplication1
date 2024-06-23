@@ -2,11 +2,13 @@
 class Assets {
   Assets._();
 
+  static const String assetsBg = 'lib/assets/bg.png';
   static const String assetsDownload = 'lib/assets/download.png';
   static const String assetsLogin = 'lib/assets/login.png';
   static const String assetsRdbbanklogo = 'lib/assets/rdbbanklogo.jpg';
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String libContactsScreen = 'lib/contacts_screen.dart';
+  static const String libHome = 'lib/home.dart';
   static const String libHomeScreen = 'lib/home_screen.dart';
   static const String libLoginScreen = 'lib/login_screen.dart';
   static const String libMain = 'lib/main.dart';
