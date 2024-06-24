@@ -165,6 +165,6 @@ class CustomNavigationState extends State<CustomNavigation>
       ),
     );
   }
-}
+} //Splash Screen
 
 
