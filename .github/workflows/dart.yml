@@ -1,9 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Dart
+name: Dart and Flutter CI
 
 on:
   push:
@@ -13,30 +8,45 @@ on:
 
 jobs:
   build:
-    runs-on: Windows-latest
+    runs-on: windows-latest
+    # You can add more OS environments for cross-platform testing
+    # runs-on: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
 
-      # Note: This workflow uses the latest stable version of the Dart SDK.
-      # You can specify other versions if desired, see documentation here:
-      # https://github.com/dart-lang/setup-dart/blob/main/README.md
-      # - uses: dart-lang/setup-dart@v1
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      # Set up Dart and Flutter environment
+      - uses: dart-lang/setup-dart@v1
+        # if you need a specific version of Dart, specify it here
+        with:
+        # version: "2.19.0"
+
+      - name: Install Flutter (for Flutter projects only)
+        run: |
+          choco install flutter
+          flutter --version
 
       - name: Install dependencies
-        run: flutter pub add
+        run: |
+          # Use the appropriate command based on your project type
+          flutter pub get
+          # Or for Dart-only projects use:
+          # dart pub get
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
+      # Uncomment to verify formatting
       # - name: Verify formatting
       #   run: dart format --output=none --set-exit-if-changed .
 
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
-        run: dart analyze
+        run: |
+          # Use `flutter analyze` for Flutter projects
+          flutter analyze
+          # Or for Dart-only projects use:
+          # dart analyze
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
       - name: Run tests
-        run: dart test
+        run: |
+          # Use `flutter test` for Flutter projects
+          flutter test
+          # Or for Dart-only projects use:
+          # dart test
