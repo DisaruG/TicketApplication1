@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
-class CustomNavigation extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   final String companyLogoPath; // Path to the logo image
   final List<String> companyNames; // List of company names to cycle through
 
-  const CustomNavigation({
+  const SplashScreen({
     super.key,
     required this.companyLogoPath,
     required this.companyNames,
@@ -17,13 +17,13 @@ class CustomNavigation extends StatefulWidget {
   CustomNavigationState createState() => CustomNavigationState();
 }
 
-class CustomNavigationState extends State<CustomNavigation>
+class CustomNavigationState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _logoScaleAnimation;
   late Animation<double> _opacityAnimation;
 
-  int _currentIndex = 0;
+  int _currentCompanyNameIndex = 0;
 
   @override
   void initState() {
@@ -54,9 +54,9 @@ class CustomNavigationState extends State<CustomNavigation>
   void _startNameTransition() {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        _currentIndex = (_currentIndex + 1) % widget.companyNames.length;
+        _currentCompanyNameIndex = (_currentCompanyNameIndex + 1) % widget.companyNames.length;
       });
-      if (_currentIndex < widget.companyNames.length - 1) {
+      if (_currentCompanyNameIndex < widget.companyNames.length - 1) {
         _startNameTransition();
       } else {
         _checkUserAuthentication();
@@ -74,14 +74,14 @@ class CustomNavigationState extends State<CustomNavigation>
         );
       } else {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     } catch (e) {
       // Handle errors if needed
       print('Error checking authentication: $e');
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Home()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     }
   }
@@ -134,8 +134,8 @@ class CustomNavigationState extends State<CustomNavigation>
                 AnimatedSwitcher(
                   duration: const Duration(seconds: 1),
                   child: Text(
-                    widget.companyNames[_currentIndex],
-                    key: ValueKey<int>(_currentIndex),
+                    widget.companyNames[_currentCompanyNameIndex],
+                    key: ValueKey<int>(_currentCompanyNameIndex),
                     style: const TextStyle(
                       fontSize: 36.0,
                       fontWeight: FontWeight.bold,

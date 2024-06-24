@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ticketapplication/home_screen.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<LoginScreen> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<LoginScreen> {
   Future<UserCredential?> signInWithGoogle() async {
     // Create an instance of the firebase auth and google signin
     FirebaseAuth auth = FirebaseAuth.instance;

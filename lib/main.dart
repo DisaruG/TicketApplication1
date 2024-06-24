@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const CustomNavigation(
+      home: const SplashScreen(
         companyLogoPath: 'lib/assets/rdbbanklogo.jpg',
         companyNames: ['RDB Tickets'],
       ),
