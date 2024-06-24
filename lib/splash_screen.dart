@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'home_screen.dart';
+import 'login_screen.dart';
 
 class CustomNavigation extends StatefulWidget {
   final String companyLogoPath; // Path to the logo image
   final List<String> companyNames; // List of company names to cycle through
-  final Widget nextScreen; // Next screen to navigate to
 
   const CustomNavigation({
     super.key,
     required this.companyLogoPath,
     required this.companyNames,
-    required this.nextScreen,
   });
 
   @override
@@ -27,6 +28,11 @@ class CustomNavigationState extends State<CustomNavigation>
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
+    _controller.forward().then((_) => _startNameTransition());
+  }
+
+  void _initializeAnimations() {
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 3));
 
@@ -43,10 +49,6 @@ class CustomNavigationState extends State<CustomNavigation>
         curve: Curves.easeInOut,
       ),
     );
-
-    _controller.forward().then((_) {
-      _startNameTransition();
-    });
   }
 
   void _startNameTransition() {
@@ -57,17 +59,31 @@ class CustomNavigationState extends State<CustomNavigation>
       if (_currentIndex < widget.companyNames.length - 1) {
         _startNameTransition();
       } else {
-        _navigateToNextScreen();
+        _checkUserAuthentication();
       }
     });
   }
 
-  void _navigateToNextScreen() {
-    Future.delayed(const Duration(seconds: 1), () {
+  Future<void> _checkUserAuthentication() async {
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      }
+    } catch (e) {
+      // Handle errors if needed
+      print('Error checking authentication: $e');
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => widget.nextScreen),
+        MaterialPageRoute(builder: (context) => const Home()),
       );
-    });
+    }
   }
 
   @override
@@ -150,3 +166,5 @@ class CustomNavigationState extends State<CustomNavigation>
     );
   }
 }
+
+
