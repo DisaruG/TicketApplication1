@@ -9,7 +9,7 @@ class ContactsScreen extends StatefulWidget {
 
 class ContactsScreenState extends State<ContactsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _contacts = [
+  final List<Map<String, String>> _contacts = [
     {'name': 'John Doe', 'email': 'john.doe@example.com'},
     {'name': 'Jane Smith', 'email': 'jane.smith@example.com'},
     {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com'},
