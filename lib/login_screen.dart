@@ -78,7 +78,7 @@ class _HomeState extends State<LoginScreen> {
                       if (userCredential != null && mounted) {
                         // Navigate to HomeScreen when sign-in is successful
                         Navigator.pushReplacement(
-                          context,
+                          =>context,
                           MaterialPageRoute(
                             builder: (context) => const HomeScreen(),
                           ),
