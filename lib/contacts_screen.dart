@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ContactsScreen extends StatefulWidget {
-  const ContactsScreen({super.key});
+  const ContactsScreen({Key? key}) : super(key: key);
 
   @override
   ContactsScreenState createState() => ContactsScreenState();
@@ -9,22 +10,14 @@ class ContactsScreen extends StatefulWidget {
 
 class ContactsScreenState extends State<ContactsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<Map<String, String>> _contacts = [
-    {'name': 'John Doe', 'email': 'john.doe@example.com'},
-    {'name': 'Jane Smith', 'email': 'jane.smith@example.com'},
-    {'name': 'Alice Johnson', 'email': 'alice.johnson@example.com'},
-    {'name': 'Bob Lee', 'email': 'bob.lee@example.com'},
-  ];
-
-  List<Map<String, String>> _filteredContacts = [];
+  List<Map<String, dynamic>> _filteredContacts = [];
+  List<Map<String, dynamic>> _allContacts = [];
 
   @override
   void initState() {
     super.initState();
-    // Initially, display all contacts
-    _filteredContacts = _contacts;
-    // Add a listener to the search field to update the list as the user types
     _searchController.addListener(_filterContacts);
+    _fetchContacts();
   }
 
   @override
@@ -33,10 +26,31 @@ class ContactsScreenState extends State<ContactsScreen> {
     super.dispose();
   }
 
+  Future<void> _fetchContacts() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+
+      List<Map<String, dynamic>> contacts = snapshot.docs.map((doc) {
+        return {
+          'name': doc['displayName'] ?? 'No Name',  // Use 'No Name' if the field is missing
+          'email': doc['email'] ?? 'No Email',
+        };
+      }).toList();
+
+      setState(() {
+        _allContacts = contacts;
+        _filteredContacts = contacts;
+      });
+    } catch (e) {
+      // Handle any errors
+      print("Error fetching contacts: $e");
+    }
+  }
+
   void _filterContacts() {
     String query = _searchController.text.toLowerCase();
     setState(() {
-      _filteredContacts = _contacts.where((contact) {
+      _filteredContacts = _allContacts.where((contact) {
         return contact['name']!.toLowerCase().contains(query) ||
             contact['email']!.toLowerCase().contains(query);
       }).toList();
@@ -46,6 +60,9 @@ class ContactsScreenState extends State<ContactsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Contacts'),
+      ),
       body: Column(
         children: [
           Padding(
@@ -62,7 +79,9 @@ class ContactsScreenState extends State<ContactsScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: _filteredContacts.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
               itemCount: _filteredContacts.length,
               itemBuilder: (context, index) {
                 var contact = _filteredContacts[index];
@@ -81,3 +100,5 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
+
+
