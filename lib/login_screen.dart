@@ -1,41 +1,54 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ticketapplication/home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'home_screen.dart';  // Import your HomeScreen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _HomeState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _HomeState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   Future<UserCredential?> signInWithGoogle() async {
-    // Create an instance of the firebase auth and google signin
     FirebaseAuth auth = FirebaseAuth.instance;
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
     if (googleUser == null) {
       // The user canceled the sign-in
       return null;
     }
 
-    // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-    // Create a new credential
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
 
-    // Sign in the user with the credential
     final UserCredential userCredential = await auth.signInWithCredential(credential);
+
+    // Save user details to Firestore
+    final user = userCredential.user;
+    if (user != null) {
+      await saveUserToFirestore(user);
+    }
+
     return userCredential;
+  }
+
+  Future<void> saveUserToFirestore(User user) async {
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    await userDoc.set({
+      'uid': user.uid,
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoURL': user.photoURL,
+    }, SetOptions(merge: true));  // Merge to avoid overwriting existing data
   }
 
   @override
@@ -44,31 +57,29 @@ class _HomeState extends State<LoginScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFE0E0E0), Color(0xFFFFFFFF)], // Gradient background from light grey to white
+            colors: [Color(0xFFE0E0E0), Color(0xFFFFFFFF)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32.0), // Increased padding for better spacing
+            padding: const EdgeInsets.all(32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Image with shadow
                 SizedBox(
-                  width: 300, // Adjusted width for better fit
-                  height: 300, // Adjusted height for better fit
+                  width: 300,
+                  height: 300,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0), // Rounded corners for the image
+                    borderRadius: BorderRadius.circular(20.0),
                     child: Image.asset(
                       'lib/assets/bg.png', // Ensure the path is correct
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                const SizedBox(height: 40), // Space between image and button
-                // Large button for Google Sign-In
+                const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
                   height: 60,
@@ -76,7 +87,6 @@ class _HomeState extends State<LoginScreen> {
                     onPressed: () async {
                       UserCredential? userCredential = await signInWithGoogle();
                       if (userCredential != null && mounted) {
-                        // Navigate to HomeScreen when sign-in is successful
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -87,7 +97,7 @@ class _HomeState extends State<LoginScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      textStyle: const TextStyle(fontSize: 18), // Text style
+                      textStyle: const TextStyle(fontSize: 18),
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.blue,
                       shadowColor: Colors.black.withOpacity(0.2),
@@ -118,3 +128,4 @@ class _HomeState extends State<LoginScreen> {
     );
   }
 }
+
