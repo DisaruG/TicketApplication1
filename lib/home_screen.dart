@@ -26,9 +26,11 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: _selectedIndex == 0
+          ? AppBar(
         title: const Text('Task Manager'),
-      ),
+      )
+          : null,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _widgetOptions.elementAt(_selectedIndex),
