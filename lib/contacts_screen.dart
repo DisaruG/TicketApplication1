@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -32,7 +32,8 @@ class ContactsScreenState extends State<ContactsScreen> {
 
       List<Map<String, dynamic>> contacts = snapshot.docs.map((doc) {
         return {
-          'name': doc['displayName'] ?? 'No Name',  // Use 'No Name' if the field is missing
+          'id': doc.id, // Document ID for potential updates or deletes
+          'name': doc['displayName'] ?? 'No Name',
           'email': doc['email'] ?? 'No Email',
         };
       }).toList();
@@ -55,6 +56,50 @@ class ContactsScreenState extends State<ContactsScreen> {
             contact['email']!.toLowerCase().contains(query);
       }).toList();
     });
+  }
+
+  void _deleteContact(String contactId) {
+    // Implement deletion logic here
+    print('Deleting contact with ID: $contactId');
+    // You can use FirebaseFirestore.instance.collection('users').doc(contactId).delete();
+  }
+
+  void _messageContact(String email) {
+    // Implement messaging logic here
+    print('Messaging contact with email: $email');
+  }
+
+  void _showContactOptions(String contactId, String email) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Contact Options'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete Contact'),
+                onTap: () {
+                  Navigator.pop(context); // Close dialog
+                  _deleteContact(contactId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.message),
+                title: const Text('Message Contact'),
+                onTap: () {
+                  Navigator.pop(context); // Close dialog
+                  _messageContact(email);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -90,6 +135,10 @@ class ContactsScreenState extends State<ContactsScreen> {
                   subtitle: Text(contact['email']!),
                   onTap: () {
                     // Implement contact interaction functionality
+                    // For example, navigate to contact details screen
+                  },
+                  onLongPress: () {
+                    _showContactOptions(contact['id'], contact['email']);
                   },
                 );
               },
@@ -100,5 +149,6 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
+
 
 
