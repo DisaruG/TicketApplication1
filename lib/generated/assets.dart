@@ -9,8 +9,8 @@ class Assets {
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String libContactsScreen = 'lib/contacts_screen.dart';
   static const String libFirebaseOptions = 'lib/firebase_options.dart';
-  static const String libHome = 'lib/login_screen.dart';
   static const String libHomeScreen = 'lib/home_screen.dart';
+  static const String libLoginScreen = 'lib/login_screen.dart';
   static const String libMain = 'lib/main.dart';
   static const String libSplashScreen = 'lib/splash_screen.dart';
   static const String libTaskCreationScreen = 'lib/task_creation_screen.dart';
