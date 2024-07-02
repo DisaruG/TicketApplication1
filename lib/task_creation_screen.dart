@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TicketCreationScreen extends StatefulWidget {
   const TicketCreationScreen({super.key});
@@ -21,11 +22,35 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   String? _attachedFile;
   bool _isLoading = false;
 
-  final List<String> _organizations = ['Org A', 'Org B', 'Org C'];
-  final List<String> _employees = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Bob Lee'];
+  List<String> _employees = []; // Updated to hold user names
+
   final List<String> _contacts = ['john@example.com', 'jane@example.com', 'alice@example.com', 'bob@example.com'];
   final List<String> _categories = ['General', 'Bug', 'Feature', 'Support', 'Inquiry'];
   final List<String> _priorities = ['Low', 'Medium', 'High'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsers(); // Fetch users data from Firestore
+    _organization = 'Regional Development Bank'; // Set default organization
+  }
+
+  Future<void> _fetchUsers() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+
+      List<String> users = snapshot.docs.map((doc) {
+        return doc['displayName'] ?? 'No Name'; // Adjust based on your Firestore schema
+      }).toList().cast<String>(); // Cast to List<String>
+
+      setState(() {
+        _employees = users;
+      });
+    } catch (e) {
+      // Handle any errors
+      print("Error fetching users: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +69,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildDropdownField(
                   label: 'Organization',
                   value: _organization,
-                  items: _organizations,
+                  items: ['Regional Development Bank'], // Set default organization
                   onChanged: (value) => setState(() => _organization = value),
                 ),
                 _buildDropdownField(
@@ -83,7 +108,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildDropdownField(
                   label: 'Assign To',
                   value: _assignee,
-                  items: _employees,
+                  items: _employees, // Use _employees list for dropdown items
                   onChanged: (value) => setState(() => _assignee = value),
                 ),
                 const SizedBox(height: 20),
@@ -239,3 +264,6 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
+
+
