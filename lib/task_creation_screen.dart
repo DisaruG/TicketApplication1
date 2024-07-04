@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gap/gap.dart'; // Import the gap package
 
 class TicketCreationScreen extends StatefulWidget {
   const TicketCreationScreen({super.key});
@@ -72,12 +73,14 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   items: ['Regional Development Bank'], // Set default organization
                   onChanged: (value) => setState(() => _organization = value),
                 ),
+                const Gap(16), // Add gap between elements
                 _buildDropdownField(
                   label: 'Contact Email',
                   value: _contactEmail,
                   items: _contacts,
                   onChanged: (value) => setState(() => _contactEmail = value),
                 ),
+                const Gap(16),
                 _buildTextField(
                   controller: _subjectController,
                   label: 'Subject',
@@ -88,6 +91,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
+                const Gap(16),
                 _buildTextField(
                   controller: _descriptionController,
                   label: 'Description',
@@ -99,28 +103,29 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                const Gap(16),
                 ListTile(
                   title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
                   trailing: const Icon(Icons.calendar_today, color: Colors.blue),
                   onTap: _pickDueDate,
                 ),
+                const Gap(16),
                 _buildDropdownField(
                   label: 'Assign To',
                   value: _assignee,
                   items: _employees, // Use _employees list for dropdown items
                   onChanged: (value) => setState(() => _assignee = value),
                 ),
-                const SizedBox(height: 20),
+                const Gap(16),
                 _buildPriorityRadioButtons(),
-                const SizedBox(height: 20),
+                const Gap(16),
                 _buildDropdownField(
                   label: 'Category',
                   value: _category,
                   items: _categories,
                   onChanged: (value) => setState(() => _category = value!),
                 ),
-                const SizedBox(height: 20),
+                const Gap(16),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else
@@ -130,10 +135,10 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     label: const Text('Attach File'),
                   ),
                 if (_attachedFile != null) ...[
-                  const SizedBox(height: 10),
+                  const Gap(10),
                   Text('Attached: $_attachedFile'),
                 ],
-                const SizedBox(height: 20),
+                const Gap(16),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
@@ -187,6 +192,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Priority:', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Gap(8),
         Wrap(
           spacing: 20.0,
           children: _priorities.map((priority) {
@@ -264,6 +270,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
