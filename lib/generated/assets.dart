@@ -16,5 +16,6 @@ class Assets {
   static const String libTaskCreationScreen = 'lib/task_creation_screen.dart';
   static const String libTaskDetailsScreen = 'lib/task_details_screen.dart';
   static const String libTasksListScreen = 'lib/tasks_list_screen.dart';
+  static const String libUserProvider = 'lib/user_provider.dart';
 
 }
