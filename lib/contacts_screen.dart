@@ -112,7 +112,7 @@ class ContactsScreenState extends State<ContactsScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.delete),
-                title: const Text('Delete Contact and Logout'),
+                title: const Text('Delete and Logout'),
                 onTap: () {
                   Navigator.pop(context); // Close dialog
                   _deleteContact(contactId, email);
