@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tasks_list_screen.dart';
 import 'contacts_screen.dart';
+import 'logout_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,11 +27,21 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 0
-          ? AppBar(
-        title: const Text('Task Manager'),
-      )
-          : null,
+      appBar: AppBar(
+        title: Text(_selectedIndex == 0 ? 'Task Manager' : 'Contacts'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              // Navigate to the logout screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LogoutScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -54,3 +65,4 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
