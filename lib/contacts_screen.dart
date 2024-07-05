@@ -97,7 +97,7 @@ class ContactsScreenState extends State<ContactsScreen> {
                   title: Text(contact['name']!),
                   subtitle: Text(contact['email']!),
                   trailing: IconButton(
-                    icon: const Icon(Icons.message),
+                    icon: const Icon(Icons.assignment_outlined),
                     onPressed: () {
                       _messageContact(contact['email']);
                     },
