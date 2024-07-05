@@ -68,6 +68,11 @@ class ContactsScreenState extends State<ContactsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(20.0), // Adjust the height as needed
+        child: AppBar(
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -112,6 +117,7 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
+
 
 
 
