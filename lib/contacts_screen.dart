@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'login_screen.dart'; // Ensure this is the correct path to your login screen
-import 'package:provider/provider.dart';
-import 'user_provider.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -62,39 +58,6 @@ class ContactsScreenState extends State<ContactsScreen> {
     });
   }
 
-  Future<void> _deleteContact(String contactId, String email) async {
-    try {
-      // Delete user data from Firestore
-      await FirebaseFirestore.instance.collection('users').doc(contactId).delete();
-
-      // If the user to be deleted is the current user, sign out
-      User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null && currentUser.email == email) {
-        // Sign out from FirebaseAuth
-        await FirebaseAuth.instance.signOut();
-
-        // Clear user data from the provider
-        Provider.of<UserProvider>(context, listen: false).signOut();
-
-        // Navigate to the login screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (route) => false,
-        );
-      } else {
-        // If not the current user, simply remove them from the contacts list
-        setState(() {
-          _allContacts.removeWhere((contact) => contact['id'] == contactId);
-          _filteredContacts = _allContacts;
-        });
-      }
-    } catch (e) {
-      print("Error deleting contact: $e");
-      // Optionally show a dialog or snack bar indicating failure
-    }
-  }
-
   void _messageContact(String email) {
     // Implement messaging logic here
     print('Messaging contact with email: $email');
@@ -110,14 +73,6 @@ class ContactsScreenState extends State<ContactsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete and Logout'),
-                onTap: () {
-                  Navigator.pop(context); // Close dialog
-                  _deleteContact(contactId, email);
-                },
-              ),
               ListTile(
                 leading: const Icon(Icons.message),
                 title: const Text('Message Contact'),
@@ -180,6 +135,7 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
+
 
 
 
