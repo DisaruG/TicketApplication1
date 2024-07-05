@@ -61,31 +61,8 @@ class ContactsScreenState extends State<ContactsScreen> {
   void _messageContact(String email) {
     // Implement messaging logic here
     print('Messaging contact with email: $email');
-  }
-
-  void _showContactOptions(String contactId, String email) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Contact Options'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.message),
-                title: const Text('Message Contact'),
-                onTap: () {
-                  Navigator.pop(context); // Close dialog
-                  _messageContact(email);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    // You can use Navigator to navigate to a new messaging screen if needed
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => MessagingScreen(email: email)));
   }
 
   @override
@@ -119,12 +96,15 @@ class ContactsScreenState extends State<ContactsScreen> {
                 return ListTile(
                   title: Text(contact['name']!),
                   subtitle: Text(contact['email']!),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.message),
+                    onPressed: () {
+                      _messageContact(contact['email']);
+                    },
+                  ),
                   onTap: () {
-                    // Implement contact interaction functionality
+                    // Implement contact interaction functionality if needed
                     // For example, navigate to contact details screen
-                  },
-                  onLongPress: () {
-                    _showContactOptions(contact['id'], contact['email']);
                   },
                 );
               },
@@ -135,6 +115,7 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
+
 
 
 
