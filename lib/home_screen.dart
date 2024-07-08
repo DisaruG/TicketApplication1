@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tasks_list_screen.dart';
 import 'contacts_screen.dart';
-import 'logout_screen.dart';
+import 'login_screen.dart'; // New import for profile screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +16,7 @@ class HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const TasksListScreen(),
     const ContactsScreen(),
+    const LoginScreen(), // Added profile screen
   ];
 
   void _onItemTapped(int index) {
@@ -28,19 +29,14 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Task Manager' : 'Contacts'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // Navigate to the logout screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LogoutScreen()),
-              );
-            },
+        title: Text(_selectedIndex == 0 ? 'Task Manager' : _selectedIndex == 1 ? 'Contacts' : 'Profile'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1.0), // Height of the border
+          child: Container(
+            color: Colors.grey, // Color of the border
+            height: 1.0,
           ),
-        ],
+        ),
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
@@ -56,6 +52,10 @@ class HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.contacts),
             label: 'Contacts',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person), // Profile icon
+            label: 'Profile',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
@@ -65,4 +65,6 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+
 
