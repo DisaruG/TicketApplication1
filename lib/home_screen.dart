@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ticketapplication/logout_screen.dart';
 import 'tasks_list_screen.dart';
 import 'contacts_screen.dart';
-import 'login_screen.dart'; // New import for profile screen
+// New import for profile screen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,7 +17,7 @@ class HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const TasksListScreen(),
     const ContactsScreen(),
-    const LoginScreen(), // Added profile screen
+    const LogoutScreen(), // Added profile screen
   ];
 
   void _onItemTapped(int index) {
