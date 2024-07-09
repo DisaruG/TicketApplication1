@@ -26,12 +26,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   List<String> _employees = [];
   List<String> _organizations = ['Regional Development Bank']; // List for organizations
 
-  final List<String> _contacts = [
-    'john@example.com',
-    'jane@example.com',
-    'alice@example.com',
-    'bob@example.com'
-  ];
+  final List<String> _contacts = [];
   final List<String> _categories = [
     'General',
     'Bug',
@@ -61,7 +56,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     if (user != null) {
       setState(() {
         _contactEmail = user.email;
-        if (!_contacts.contains(_contactEmail)) {
+        if (_contactEmail != null && !_contacts.contains(_contactEmail)) {
           _contacts.add(_contactEmail!);
         }
       });
@@ -307,6 +302,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
