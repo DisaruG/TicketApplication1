@@ -12,18 +12,33 @@ class ContactsScreenState extends State<ContactsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _filteredContacts = [];
   List<Map<String, dynamic>> _allContacts = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_filterContacts);
+    _searchController.addListener(_onSearchChanged);
     _fetchContacts();
   }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    // Debounce mechanism
+    if (_searchController.text.isEmpty) {
+      _filterContacts('');
+    } else {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (_searchController.text == _searchController.value.text) {
+          _filterContacts(_searchController.text);
+        }
+      });
+    }
   }
 
   Future<void> _fetchContacts() async {
@@ -32,7 +47,7 @@ class ContactsScreenState extends State<ContactsScreen> {
 
       List<Map<String, dynamic>> contacts = snapshot.docs.map((doc) {
         return {
-          'id': doc.id, // Document ID for potential updates or deletes
+          'id': doc.id,
           'name': doc['displayName'] ?? 'No Name',
           'email': doc['email'] ?? 'No Email',
         };
@@ -41,6 +56,7 @@ class ContactsScreenState extends State<ContactsScreen> {
       setState(() {
         _allContacts = contacts;
         _filteredContacts = contacts;
+        _isLoading = false;
       });
     } catch (e) {
       // Handle any errors
@@ -48,12 +64,14 @@ class ContactsScreenState extends State<ContactsScreen> {
     }
   }
 
-  void _filterContacts() {
-    String query = _searchController.text.toLowerCase();
+  void _filterContacts(String query) {
     setState(() {
       _filteredContacts = _allContacts.where((contact) {
-        return contact['name']!.toLowerCase().contains(query) ||
-            contact['email']!.toLowerCase().contains(query);
+        final nameLower = contact['name']!.toLowerCase();
+        final emailLower = contact['email']!.toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        return nameLower.contains(searchLower) || emailLower.contains(searchLower);
       }).toList();
     });
   }
@@ -61,62 +79,74 @@ class ContactsScreenState extends State<ContactsScreen> {
   void _messageContact(String email) {
     // Implement messaging logic here
     print('Messaging contact with email: $email');
-    // You can use Navigator to navigate to a new messaging screen if needed
     // Navigator.push(context, MaterialPageRoute(builder: (context) => MessagingScreen(email: email)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(20.0), // Adjust the height as needed
-        child: AppBar(
-        ),
-      ),
+      appBar: buildAppBar(),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search Contacts',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                prefixIcon: const Icon(Icons.search),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _filteredContacts.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-              itemCount: _filteredContacts.length,
-              itemBuilder: (context, index) {
-                var contact = _filteredContacts[index];
-                return ListTile(
-                  title: Text(contact['name']!),
-                  subtitle: Text(contact['email']!),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.assignment_outlined),
-                    onPressed: () {
-                      _messageContact(contact['email']);
-                    },
-                  ),
-                  onTap: () {
-                    // Implement contact interaction functionality if needed
-                    // For example, navigate to contact details screen
-                  },
-                );
-              },
-            ),
-          ),
+          buildSearchBar(),
+          _isLoading ? const Center(child: CircularProgressIndicator()) : buildContactList(),
         ],
       ),
     );
   }
+
+  PreferredSizeWidget buildAppBar() {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(30.0),
+      child: AppBar(
+      ),
+    );
+  }
+
+  Widget buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          labelText: 'Search Contacts',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          prefixIcon: const Icon(Icons.search),
+        ),
+      ),
+    );
+  }
+
+  Widget buildContactList() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _filteredContacts.length,
+        itemBuilder: (context, index) {
+          final contact = _filteredContacts[index];
+          return ListTile(
+            title: Text(contact['name']!),
+            subtitle: Text(contact['email']!),
+            trailing: IconButton(
+              icon: const Icon(Icons.assignment_outlined),
+              onPressed: () {
+                _messageContact(contact['email']);
+              },
+            ),
+            onTap: () {
+              // Implement contact interaction functionality if needed
+            },
+          );
+        },
+      ),
+    );
+  }
 }
+
+
+
+
 
 
 
