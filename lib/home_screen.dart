@@ -25,27 +25,52 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String _getTitle(int index) {
+    switch (index) {
+      case 0:
+        return 'Task Manager';
+      case 1:
+        return 'Contacts';
+      case 2:
+        return 'Profile';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Task Manager' : _selectedIndex == 1 ? 'Contacts' : 'Profile'),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.0), // Height of the border
-          child: Container(
-            color: Colors.grey, // Color of the border
-            height: 1.0,
-          ),
+      appBar: buildAppBar(),
+      body: buildContentArea(),
+      bottomNavigationBar: buildBottomNavigationBar(),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: Text(_getTitle(_selectedIndex)),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1.0),
+        child: Container(
+          color: Colors.grey,
+          height: 1.0,
         ),
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+    );
+  }
+
+  Widget buildContentArea() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: _widgetOptions.elementAt(_selectedIndex),
+    );
+  }
+
+  Widget buildBottomNavigationBar() {
+    return CustomBottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
     );
   }
 }
@@ -62,7 +87,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the labels for the icons
     final List<String> labels = ['Tasks', 'Contacts', 'Profile'];
 
     return Container(
@@ -73,7 +97,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 5,
-            offset: const Offset(0, -2), // Shadow position
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -111,7 +135,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4.0), // Space between icon and label
+                  const SizedBox(height: 4.0),
                   Text(
                     labels[index],
                     style: TextStyle(
@@ -131,6 +155,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
+
 
 
 
