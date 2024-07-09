@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gap/gap.dart'; // Import the gap package
+import 'package:gap/gap.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TicketCreationScreen extends StatefulWidget {
   const TicketCreationScreen({super.key});
@@ -12,43 +13,74 @@ class TicketCreationScreen extends StatefulWidget {
 
 class TicketCreationScreenState extends State<TicketCreationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _subjectController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final _subjectController = TextEditingController();
+  final _descriptionController = TextEditingController();
   DateTime? _dueDate;
   String _priority = 'Low';
   String _category = 'General';
   String? _assignee;
   String? _organization;
   String? _contactEmail;
-  String? _attachedFile;
+  PlatformFile? _attachedFile; // Use PlatformFile to store file details
   bool _isLoading = false;
+  List<String> _employees = [];
+  List<String> _organizations = ['Regional Development Bank']; // List for organizations
 
-  List<String> _employees = []; // Updated to hold user names
-
-  final List<String> _contacts = ['john@example.com', 'jane@example.com', 'alice@example.com', 'bob@example.com'];
-  final List<String> _categories = ['General', 'Bug', 'Feature', 'Support', 'Inquiry'];
+  final List<String> _contacts = [
+    'john@example.com',
+    'jane@example.com',
+    'alice@example.com',
+    'bob@example.com'
+  ];
+  final List<String> _categories = [
+    'General',
+    'Bug',
+    'Feature',
+    'Support',
+    'Inquiry'
+  ];
   final List<String> _priorities = ['Low', 'Medium', 'High'];
 
   @override
   void initState() {
     super.initState();
-    _fetchUsers(); // Fetch users data from Firestore
-    _organization = 'Regional Development Bank'; // Set default organization
+    _fetchUsers();
+    _fetchCurrentUserEmail();
+    _organization = _organizations.first; // Set default organization
+  }
+
+  @override
+  void dispose() {
+    _subjectController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchCurrentUserEmail() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _contactEmail = user.email;
+        if (!_contacts.contains(_contactEmail)) {
+          _contacts.add(_contactEmail!);
+        }
+      });
+    }
   }
 
   Future<void> _fetchUsers() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot snapshot =
+      await FirebaseFirestore.instance.collection('users').get();
 
       List<String> users = snapshot.docs.map((doc) {
-        return doc['displayName'] ?? 'No Name'; // Adjust based on your Firestore schema
-      }).toList().cast<String>(); // Cast to List<String>
+        return (doc['displayName'] ?? 'No Name') as String;
+      }).toList();
 
       setState(() {
         _employees = users;
       });
     } catch (e) {
-      // Handle any errors
       print("Error fetching users: $e");
     }
   }
@@ -70,10 +102,10 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildDropdownField(
                   label: 'Organization',
                   value: _organization,
-                  items: ['Regional Development Bank'], // Set default organization
+                  items: _organizations,
                   onChanged: (value) => setState(() => _organization = value),
                 ),
-                const Gap(16), // Add gap between elements
+                const Gap(16),
                 _buildDropdownField(
                   label: 'Contact Email',
                   value: _contactEmail,
@@ -105,7 +137,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(16),
                 ListTile(
-                  title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
+                  title: Text(
+                      'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
                   trailing: const Icon(Icons.calendar_today, color: Colors.blue),
                   onTap: _pickDueDate,
                 ),
@@ -113,7 +146,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildDropdownField(
                   label: 'Assign To',
                   value: _assignee,
-                  items: _employees, // Use _employees list for dropdown items
+                  items: _employees,
                   onChanged: (value) => setState(() => _assignee = value),
                 ),
                 const Gap(16),
@@ -136,7 +169,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   ),
                 if (_attachedFile != null) ...[
                   const Gap(10),
-                  Text('Attached: $_attachedFile'),
+                  Text('Attached: ${_attachedFile!.name}'),
                 ],
                 const Gap(16),
                 ElevatedButton(
@@ -168,7 +201,10 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(labelText: label),
       value: value,
-      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
+      items: items.map((item) => DropdownMenuItem(
+        value: item,
+        child: Text(item),
+      )).toList(),
       onChanged: onChanged,
     );
   }
@@ -207,7 +243,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     );
   }
 
-  Widget _buildRadioButton(String label, String groupValue, ValueChanged<String?> onChanged) {
+  Widget _buildRadioButton(
+      String label, String groupValue, ValueChanged<String?> onChanged) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -243,7 +280,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null) {
         setState(() {
-          _attachedFile = result.files.single.name;
+          _attachedFile = result.files.single;
         });
       }
     } finally {
@@ -270,6 +307,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
