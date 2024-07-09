@@ -51,9 +51,9 @@ class HomeScreenState extends State<HomeScreen> {
     return AppBar(
       title: Text(_getTitle(_selectedIndex)),
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1.0),
+        preferredSize: const Size.fromHeight(10.0),
         child: Container(
-          color: Colors.grey,
+          color: Colors.blueAccent,
           height: 1.0,
         ),
       ),
@@ -94,9 +94,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
         color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.blue.withOpacity(0.2),
             spreadRadius: 1,
-            blurRadius: 5,
+            blurRadius: 3,
             offset: const Offset(0, -2),
           ),
         ],
