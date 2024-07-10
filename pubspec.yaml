@@ -44,6 +44,7 @@ dependencies:
   gap: ^3.0.1
   provider: ^6.1.2
   flutter_searchable_dropdown: ^2.0.0
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
