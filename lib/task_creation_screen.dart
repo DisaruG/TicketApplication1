@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_searchable_dropdown/flutter_searchable_dropdown.dart';
+import 'package:logging/logging.dart';
 
 class TicketCreationScreen extends StatefulWidget {
   const TicketCreationScreen({super.key});
@@ -36,6 +37,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     'Inquiry'
   ];
   final List<String> _priorities = ['Low', 'Medium', 'High'];
+
+  final Logger _logger = Logger('TicketCreationScreen');
 
   @override
   void initState() {
@@ -77,7 +80,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         _employees = users;
       });
     } catch (e) {
-      print("Error fetching users: $e");
+      _logger.severe("Error fetching users", e);
     }
   }
 
@@ -101,14 +104,14 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   items: organizations,
                   onChanged: (value) => setState(() => _organization = value),
                 ),
-                const Gap(25),
+                const Gap(16),
                 _buildDropdownField(
                   label: 'Contact Email',
                   value: _contactEmail,
                   items: _contacts,
                   onChanged: (value) => setState(() => _contactEmail = value),
                 ),
-                const Gap(25),
+                const Gap(16),
                 _buildTextField(
                   controller: _subjectController,
                   label: 'Subject',
@@ -119,7 +122,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
-                const Gap(15),
+                const Gap(16),
                 _buildTextField(
                   controller: _descriptionController,
                   label: 'Description',
@@ -131,11 +134,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
-                const Gap(25),
+                const Gap(16),
                 ListTile(
                   title: Text(
                       'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
-                  trailing: const Icon(Icons.calendar_today, color: Colors.blueAccent),
+                  trailing: const Icon(Icons.calendar_today, color: Colors.blue),
                   onTap: _pickDueDate,
                 ),
                 const Gap(16),
@@ -145,16 +148,16 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   items: _employees,
                   onChanged: (value) => setState(() => _assignee = value),
                 ),
-                const Gap(25),
+                const Gap(16),
                 _buildPriorityRadioButtons(),
-                const Gap(25),
+                const Gap(16),
                 _buildDropdownField(
                   label: 'Category',
                   value: _category,
                   items: _categories,
                   onChanged: (value) => setState(() => _category = value!),
                 ),
-                const Gap(25),
+                const Gap(16),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else
@@ -167,7 +170,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   const Gap(10),
                   Text('Attached: ${_attachedFile!.name}'),
                 ],
-                const Gap(25),
+                const Gap(16),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
@@ -318,10 +321,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       'attachedFile': _attachedFile,
     };
     // Handle the created ticket here (e.g., send to a backend or save locally)
-    print(newTicket); // For now, just print the ticket details
+    _logger.info("New ticket created: $newTicket"); // Log the ticket details
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
