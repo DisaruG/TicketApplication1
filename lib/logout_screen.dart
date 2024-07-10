@@ -5,17 +5,42 @@ import 'package:provider/provider.dart';
 import 'login_screen.dart';  // Ensure this path is correct
 import 'user_provider.dart';
 
-class LogoutScreen extends StatelessWidget {
+class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
+
+  @override
+  LogoutScreenState createState() => LogoutScreenState();
+}
+
+class LogoutScreenState extends State<LogoutScreen> {
+  User? _currentUser;
+  String? _displayName;
+  String? _email;
+  String? _photoURL;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _currentUser = user;
+        _displayName = user.displayName;
+        _email = user.email;
+        _photoURL = user.photoURL;
+      });
+    }
+  }
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      // Get current user
-      User? currentUser = FirebaseAuth.instance.currentUser;
-
-      if (currentUser != null) {
+      if (_currentUser != null) {
         // Optionally clear user data from Firestore (if needed)
-        await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).delete();
+        await FirebaseFirestore.instance.collection('users').doc(_currentUser!.uid).delete();
 
         // Sign out from FirebaseAuth
         await FirebaseAuth.instance.signOut();
@@ -39,23 +64,51 @@ class LogoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+      ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => _signOut(context),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            textStyle: const TextStyle(fontSize: 18),
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.red,
-            shadowColor: Colors.black.withOpacity(0.2),
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+        child: _currentUser == null
+            ? const CircularProgressIndicator()
+            : Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_photoURL != null)
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(_photoURL!),
+              ),
+            const SizedBox(height: 15),
+            Text(
+              _displayName ?? 'No Name',
+              style: const TextStyle(fontSize: 24),
             ),
-          ),
-          child: const Text('Logout'),
+            const SizedBox(height: 8),
+            Text(
+              _email ?? 'No Email',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () => _signOut(context),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                textStyle: const TextStyle(fontSize: 18),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                shadowColor: Colors.black.withOpacity(0.2),
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
+
