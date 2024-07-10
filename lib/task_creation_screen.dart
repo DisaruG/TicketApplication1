@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_searchable_dropdown/flutter_searchable_dropdown.dart';
 
 class TicketCreationScreen extends StatefulWidget {
   const TicketCreationScreen({super.key});
@@ -24,7 +25,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   PlatformFile? _attachedFile; // Use PlatformFile to store file details
   bool _isLoading = false;
   List<String> _employees = [];
-  List<String> _organizations = ['Regional Development Bank']; // List for organizations
+  List<String> organizations = ['Regional Development Bank']; // List for organizations
 
   final List<String> _contacts = [];
   final List<String> _categories = [
@@ -41,7 +42,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     super.initState();
     _fetchUsers();
     _fetchCurrentUserEmail();
-    _organization = _organizations.first; // Set default organization
+    _organization = organizations.first; // Set default organization
   }
 
   @override
@@ -97,7 +98,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildDropdownField(
                   label: 'Organization',
                   value: _organization,
-                  items: _organizations,
+                  items: organizations,
                   onChanged: (value) => setState(() => _organization = value),
                 ),
                 const Gap(16),
@@ -138,7 +139,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   onTap: _pickDueDate,
                 ),
                 const Gap(16),
-                _buildDropdownField(
+                _buildSearchableDropdownField(
                   label: 'Assign To',
                   value: _assignee,
                   items: _employees,
@@ -201,6 +202,25 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         child: Text(item),
       )).toList(),
       onChanged: onChanged,
+    );
+  }
+
+  Widget _buildSearchableDropdownField({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return SearchableDropdown.single(
+      items: items.map((item) => DropdownMenuItem(
+        value: item,
+        child: Text(item),
+      )).toList(),
+      value: value,
+      hint: Text(label),
+      searchHint: Text('Search $label'),
+      onChanged: onChanged,
+      isExpanded: true,
     );
   }
 
@@ -302,6 +322,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
