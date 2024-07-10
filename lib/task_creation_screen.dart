@@ -101,14 +101,14 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   items: organizations,
                   onChanged: (value) => setState(() => _organization = value),
                 ),
-                const Gap(16),
+                const Gap(25),
                 _buildDropdownField(
                   label: 'Contact Email',
                   value: _contactEmail,
                   items: _contacts,
                   onChanged: (value) => setState(() => _contactEmail = value),
                 ),
-                const Gap(16),
+                const Gap(25),
                 _buildTextField(
                   controller: _subjectController,
                   label: 'Subject',
@@ -119,7 +119,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
-                const Gap(16),
+                const Gap(15),
                 _buildTextField(
                   controller: _descriptionController,
                   label: 'Description',
@@ -131,11 +131,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     return null;
                   },
                 ),
-                const Gap(16),
+                const Gap(25),
                 ListTile(
                   title: Text(
                       'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
-                  trailing: const Icon(Icons.calendar_today, color: Colors.blue),
+                  trailing: const Icon(Icons.calendar_today, color: Colors.blueAccent),
                   onTap: _pickDueDate,
                 ),
                 const Gap(16),
@@ -145,16 +145,16 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   items: _employees,
                   onChanged: (value) => setState(() => _assignee = value),
                 ),
-                const Gap(16),
+                const Gap(25),
                 _buildPriorityRadioButtons(),
-                const Gap(16),
+                const Gap(25),
                 _buildDropdownField(
                   label: 'Category',
                   value: _category,
                   items: _categories,
                   onChanged: (value) => setState(() => _category = value!),
                 ),
-                const Gap(16),
+                const Gap(25),
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator())
                 else
@@ -167,7 +167,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   const Gap(10),
                   Text('Attached: ${_attachedFile!.name}'),
                 ],
-                const Gap(16),
+                const Gap(25),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
