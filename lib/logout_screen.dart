@@ -65,50 +65,52 @@ class LogoutScreenState extends State<LogoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0, // Optional: remove the shadow below the AppBar
       ),
-      body: Center(
-        child: _currentUser == null
-            ? const CircularProgressIndicator()
-            : Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_photoURL != null)
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(_photoURL!),
+      body: _currentUser == null
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+        children: [
+          const SizedBox(height: 10),
+          if (_photoURL != null)
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage(_photoURL!),
+            ),
+          const SizedBox(height: 15),
+          Text(
+            _displayName ?? 'No Name',
+            style: const TextStyle(fontSize: 24),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _email ?? 'No Email',
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () => _signOut(context),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              textStyle: const TextStyle(fontSize: 18),
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.red,
+              shadowColor: Colors.black.withOpacity(0.2),
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-            const SizedBox(height: 15),
-            Text(
-              _displayName ?? 'No Name',
-              style: const TextStyle(fontSize: 24),
             ),
-            const SizedBox(height: 8),
-            Text(
-              _email ?? 'No Email',
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => _signOut(context),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                textStyle: const TextStyle(fontSize: 18),
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.red,
-                shadowColor: Colors.black.withOpacity(0.2),
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text('Logout'),
-            ),
-          ],
-        ),
+            child: const Text('Logout'),
+          ),
+        ],
       ),
     );
   }
 }
+
+
+
 
 
 
