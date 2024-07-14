@@ -41,7 +41,7 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: _selectedIndex != 2 ? buildAppBar() : null, // Hide AppBar on LogoutScreen
       body: buildContentArea(),
       bottomNavigationBar: buildBottomNavigationBar(),
     );
@@ -155,6 +155,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
+
 
 
 
