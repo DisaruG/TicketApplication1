@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'RDB Tickets',
         theme: ThemeData(
-          brightness: Brightness.dark,
           primarySwatch: Colors.blue,
         ),
         home: const SplashScreen(
