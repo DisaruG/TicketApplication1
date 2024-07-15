@@ -88,7 +88,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Ticket'),
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Create New Ticket',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -165,6 +169,14 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     onPressed: _attachFile,
                     icon: const Icon(Icons.attach_file),
                     label: const Text('Attach File'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black, backgroundColor: Colors.grey.shade200,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      elevation: 4.0,
+                    ),
                   ),
                 if (_attachedFile != null) ...[
                   const Gap(10),
@@ -178,8 +190,12 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(10),
-                    textStyle: const TextStyle(fontSize: 16),
+                    foregroundColor: Colors.white, backgroundColor: Colors.black,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    elevation: 4.0,
                   ),
                   child: const Text('Create Ticket'),
                 ),
@@ -325,6 +341,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
+
 
 
 
