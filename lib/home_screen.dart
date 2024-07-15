@@ -25,23 +25,10 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  String _getTitle(int index) {
-    switch (index) {
-      case 0:
-        return 'Task Manager';
-      case 1:
-        return 'Contacts';
-      case 2:
-        return 'Profile';
-      default:
-        return '';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex != 2 ? buildAppBar() : null, // Hide AppBar on LogoutScreen
+      appBar: _selectedIndex == 0 ? buildAppBar() : null, // Show AppBar only on home screen
       body: buildContentArea(),
       bottomNavigationBar: buildBottomNavigationBar(),
     );
@@ -50,9 +37,9 @@ class HomeScreenState extends State<HomeScreen> {
   AppBar buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
-      title: Text(
-        _getTitle(_selectedIndex),
-        style: const TextStyle(color: Colors.black),
+      title: const Text(
+        'Dashboard', // Set a constant title for the AppBar
+        style: TextStyle(color: Colors.black),
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10.0),
@@ -155,6 +142,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
+
+
 
 
 
