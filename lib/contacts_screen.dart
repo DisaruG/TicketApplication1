@@ -43,7 +43,8 @@ class ContactsScreenState extends State<ContactsScreen> {
 
   Future<void> _fetchContacts() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot snapshot =
+      await FirebaseFirestore.instance.collection('users').get();
 
       List<Map<String, dynamic>> contacts = snapshot.docs.map((doc) {
         return {
@@ -97,15 +98,18 @@ class ContactsScreenState extends State<ContactsScreen> {
 
   PreferredSizeWidget buildAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(30.0),
+      preferredSize: const Size.fromHeight(60.0),
       child: AppBar(
+        title: const Text('Contacts', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
     );
   }
 
   Widget buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
@@ -114,6 +118,8 @@ class ContactsScreenState extends State<ContactsScreen> {
             borderRadius: BorderRadius.circular(8.0),
           ),
           prefixIcon: const Icon(Icons.search),
+          filled: true,
+          fillColor: Colors.grey.shade200,
         ),
       ),
     );
@@ -125,24 +131,33 @@ class ContactsScreenState extends State<ContactsScreen> {
         itemCount: _filteredContacts.length,
         itemBuilder: (context, index) {
           final contact = _filteredContacts[index];
-          return ListTile(
-            title: Text(contact['name']!),
-            subtitle: Text(contact['email']!),
-            trailing: IconButton(
-              icon: const Icon(Icons.assignment_outlined),
-              onPressed: () {
-                _messageContact(contact['email']);
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            elevation: 4.0,
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16.0),
+              title: Text(contact['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(contact['email']!),
+              trailing: IconButton(
+                icon: const Icon(Icons.assignment_outlined, color: Colors.blue),
+                onPressed: () {
+                  _messageContact(contact['email']);
+                },
+              ),
+              onTap: () {
+                // Implement contact interaction functionality if needed
               },
             ),
-            onTap: () {
-              // Implement contact interaction functionality if needed
-            },
           );
         },
       ),
     );
   }
 }
+
 
 
 
