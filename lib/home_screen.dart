@@ -49,11 +49,15 @@ class HomeScreenState extends State<HomeScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text(_getTitle(_selectedIndex)),
+      backgroundColor: Colors.white,
+      title: Text(
+        _getTitle(_selectedIndex),
+        style: const TextStyle(color: Colors.black),
+      ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10.0),
         child: Container(
-          color: Colors.blueAccent,
+          color: Colors.grey.shade300,
           height: 1.0,
         ),
       ),
@@ -91,10 +95,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.2),
+            color: Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, -2),
@@ -121,7 +125,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                         width: isSelected ? 50.0 : 0.0,
                         height: isSelected ? 25.0 : 0.0,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+                          color: isSelected ? Colors.grey.withOpacity(0.2) : Colors.transparent,
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
@@ -129,9 +133,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                         index == 0 ? Icons.assignment :
                         index == 1 ? Icons.contacts :
                         Icons.person,
-                        color: isSelected
-                            ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                            : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+                        color: isSelected ? Colors.black : Colors.grey,
                       ),
                     ],
                   ),
@@ -139,9 +141,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   Text(
                     labels[index],
                     style: TextStyle(
-                      color: isSelected
-                          ? Theme.of(context).bottomNavigationBarTheme.selectedItemColor
-                          : Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
+                      color: isSelected ? Colors.black : Colors.grey,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12.0,
                     ),
@@ -155,6 +155,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
+
 
 
 
