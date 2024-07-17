@@ -161,15 +161,31 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   onChanged: (value) => setState(() => _category = value!),
                 ),
                 const Gap(16),
-                if (_isLoading)
-                  const Center(child: CupertinoActivityIndicator())
+                if (_isAttachingFile)
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const CupertinoActivityIndicator(),
+                      label: const Text('Attaching...'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.grey.shade200,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        elevation: 4.0,
+                      ),
+                    ),
+                  )
                 else
                   ElevatedButton.icon(
                     onPressed: _attachFile,
                     icon: const Icon(Icons.attach_file),
                     label: const Text('Attach File'),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black, backgroundColor: Colors.grey.shade200,
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.grey.shade200,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -177,29 +193,45 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                       elevation: 4.0,
                     ),
                   ),
-                if (_isAttachingFile)
-                  const Center(child: CupertinoActivityIndicator()),
                 if (_attachedFile != null) ...[
                   const Gap(10),
                   Text('Attached: ${_attachedFile!.name}'),
                 ],
                 const Gap(16),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() == true) {
-                      _createTicket();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.black,
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                if (_isLoading)
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        elevation: 4.0,
+                      ),
+                      child: const CupertinoActivityIndicator(color: Colors.white),
                     ),
-                    elevation: 4.0,
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() == true) {
+                        _createTicket();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      elevation: 4.0,
+                    ),
+                    child: const Text('Create Ticket'),
                   ),
-                  child: const Text('Create Ticket'),
-                ),
               ],
             ),
           ),
@@ -288,12 +320,16 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
 
   void _attachFile() async {
     setState(() => _isAttachingFile = true);
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (result != null && result.files.isNotEmpty) {
-      setState(() => _attachedFile = result.files.first);
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null && result.files.isNotEmpty) {
+        setState(() => _attachedFile = result.files.first);
+      }
+    } finally {
+      setState(() => _isAttachingFile = false);
     }
-    setState(() => _isAttachingFile = false);
   }
 
   void _createTicket() async {
