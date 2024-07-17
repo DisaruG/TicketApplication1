@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart'; // Import Cupertino package
-import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gap/gap.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_searchable_dropdown/flutter_searchable_dropdown.dart';
+import 'package:gap/gap.dart';
 import 'package:logging/logging.dart';
 
 class TicketCreationScreen extends StatefulWidget {
@@ -24,10 +22,10 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   String? _assignee;
   String? _organization;
   String? _contactEmail;
-  PlatformFile? _attachedFile; // Use PlatformFile to store file details
+  PlatformFile? _attachedFile;
   bool _isLoading = false;
   List<String> _employees = [];
-  List<String> organizations = ['Regional Development Bank']; // List for organizations
+  List<String> organizations = ['Regional Development Bank'];
 
   final List<String> _contacts = [];
   final List<String> _categories = [
@@ -46,7 +44,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     super.initState();
     _fetchUsers();
     _fetchCurrentUserEmail();
-    _organization = organizations.first; // Set default organization
+    _organization = organizations.first;
   }
 
   @override
@@ -70,8 +68,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
 
   Future<void> _fetchUsers() async {
     try {
-      QuerySnapshot snapshot =
-      await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
 
       List<String> users = snapshot.docs.map((doc) {
         return (doc['displayName'] ?? 'No Name') as String;
@@ -141,8 +138,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(16),
                 ListTile(
-                  title: Text(
-                      'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
+                  title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
                   trailing: const Icon(Icons.calendar_today, color: Colors.blue),
                   onTap: _pickDueDate,
                 ),
@@ -164,7 +160,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(16),
                 if (_isLoading)
-                  const Center(child: CupertinoActivityIndicator()) // Use CupertinoActivityIndicator
+                  const Center(child: CircularProgressIndicator())
                 else
                   ElevatedButton.icon(
                     onPressed: _attachFile,
@@ -231,14 +227,13 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
-    return SearchableDropdown.single(
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(labelText: label),
+      value: value,
       items: items.map((item) => DropdownMenuItem(
         value: item,
         child: Text(item),
       )).toList(),
-      value: value,
-      hint: Text(label),
-      searchHint: Text('Search $label'),
       onChanged: onChanged,
       isExpanded: true,
     );
@@ -248,7 +243,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     required TextEditingController controller,
     required String label,
     int maxLines = 1,
-    String? Function(String?)? validator,
+    FormFieldValidator<String>? validator,
   }) {
     return TextFormField(
       controller: controller,
@@ -258,90 +253,71 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     );
   }
 
+  void _pickDueDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() => _dueDate = picked);
+    }
+  }
+
   Widget _buildPriorityRadioButtons() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Priority:', style: TextStyle(fontWeight: FontWeight.bold)),
-        const Gap(8),
-        Wrap(
-          spacing: 20.0,
-          children: _priorities.map((priority) {
-            return _buildRadioButton(priority, _priority, (value) {
-              setState(() {
-                _priority = value!;
-              });
-            });
-          }).toList(),
-        ),
+        const Text('Priority'),
+        ..._priorities.map((priority) {
+          return RadioListTile<String>(
+            title: Text(priority),
+            value: priority,
+            groupValue: _priority,
+            onChanged: (value) => setState(() => _priority = value!),
+          );
+        }).toList(),
       ],
     );
   }
 
-  Widget _buildRadioButton(
-      String label, String groupValue, ValueChanged<String?> onChanged) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Radio<String>(
-          value: label,
-          groupValue: groupValue,
-          onChanged: onChanged,
-        ),
-        Text(label),
-      ],
-    );
-  }
+  void _attachFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-  Future<void> _pickDueDate() async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _dueDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        _dueDate = pickedDate;
-      });
+    if (result != null && result.files.isNotEmpty) {
+      setState(() => _attachedFile = result.files.first);
     }
   }
 
-  Future<void> _attachFile() async {
-    setState(() {
-      _isLoading = true;
-    });
+  void _createTicket() async {
+    setState(() => _isLoading = true);
+
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null) {
-        setState(() {
-          _attachedFile = result.files.single;
-        });
-      }
-    } finally {
-      setState(() {
-        _isLoading = false;
+      await FirebaseFirestore.instance.collection('tasks').add({
+        'title': _subjectController.text,
+        'description': _descriptionController.text,
+        'dueDate': _dueDate?.toString().split(' ')[0] ?? '',
+        'priority': _priority,
+        'category': _category,
+        'assignee': _assignee,
+        'organization': _organization,
+        'contactEmail': _contactEmail,
+        'attachedFileName': _attachedFile?.name,
+        'status': 'Not Started',
       });
+      Navigator.pop(context, true);
+    } catch (e) {
+      _logger.severe("Error creating ticket", e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error creating ticket')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
-  }
-
-  void _createTicket() {
-    var newTicket = {
-      'subject': _subjectController.text,
-      'description': _descriptionController.text,
-      'dueDate': _dueDate,
-      'priority': _priority,
-      'category': _category,
-      'assignee': _assignee,
-      'organization': _organization,
-      'contactEmail': _contactEmail,
-      'attachedFile': _attachedFile,
-    };
-    // Handle the created ticket here (e.g., send to a backend or save locally)
-    _logger.info("New ticket created: $newTicket"); // Log the ticket details
-    Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
