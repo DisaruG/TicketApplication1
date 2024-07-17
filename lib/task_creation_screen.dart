@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // Import Cupertino package
 import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
@@ -163,7 +164,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(16),
                 if (_isLoading)
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: CupertinoActivityIndicator()) // Use CupertinoActivityIndicator
                 else
                   ElevatedButton.icon(
                     onPressed: _attachFile,
@@ -341,6 +342,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.pop(context); // Go back to the previous screen
   }
 }
+
 
 
 
