@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,6 +25,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   String? _contactEmail;
   PlatformFile? _attachedFile;
   bool _isLoading = false;
+  bool _isAttachingFile = false;
   List<String> _employees = [];
   List<String> organizations = ['Regional Development Bank'];
 
@@ -160,7 +162,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(16),
                 if (_isLoading)
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: CupertinoActivityIndicator())
                 else
                   ElevatedButton.icon(
                     onPressed: _attachFile,
@@ -175,6 +177,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                       elevation: 4.0,
                     ),
                   ),
+                if (_isAttachingFile)
+                  const Center(child: CupertinoActivityIndicator()),
                 if (_attachedFile != null) ...[
                   const Gap(10),
                   Text('Attached: ${_attachedFile!.name}'),
@@ -283,11 +287,13 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   }
 
   void _attachFile() async {
+    setState(() => _isAttachingFile = true);
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null && result.files.isNotEmpty) {
       setState(() => _attachedFile = result.files.first);
     }
+    setState(() => _isAttachingFile = false);
   }
 
   void _createTicket() async {
@@ -317,6 +323,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
 
 
 
