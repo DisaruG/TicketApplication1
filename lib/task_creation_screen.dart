@@ -235,7 +235,13 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState?.validate() == true) {
-                        _createTicket();
+                        if (_assignee == null || _assignee!.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please assign the task to someone.')),
+                          );
+                        } else {
+                          _createTicket();
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -413,6 +419,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
 
 
 
