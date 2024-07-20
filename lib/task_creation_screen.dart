@@ -44,8 +44,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchUsers();
-    _fetchCurrentUserEmail();
+    _fetchCurrentUserEmail().then((_) => _fetchUsers());
     _organization = organizations.first;
   }
 
@@ -70,11 +69,16 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
 
   Future<void> _fetchUsers() async {
     try {
+      User? user = FirebaseAuth.instance.currentUser;
       QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
 
       List<String> users = snapshot.docs.map((doc) {
         return (doc['displayName'] ?? 'No Name') as String;
       }).toList();
+
+      if (user != null) {
+        users.removeWhere((userName) => userName == user.displayName);
+      }
 
       setState(() {
         _employees = users;
@@ -359,6 +363,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
 
 
 
