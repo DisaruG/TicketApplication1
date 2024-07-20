@@ -81,10 +81,10 @@ class _TasksListScreenState extends State<TasksListScreen> {
       case 'High':
         return const Icon(Icons.priority_high, color: Colors.red);
       case 'Medium':
-        return const Icon(Icons.priority_high, color: Colors.orange);
+        return const Icon(Icons.priority_high, color: Colors.green);
       case 'Low':
       default:
-        return const Icon(Icons.priority_high, color: Colors.green);
+        return const Icon(Icons.priority_high, color: Colors.grey);
     }
   }
 
