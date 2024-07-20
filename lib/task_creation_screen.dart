@@ -106,63 +106,76 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDropdownField(
-                  label: 'Organization',
-                  value: _organization,
-                  items: organizations,
-                  onChanged: (value) => setState(() => _organization = value),
+                _buildSection(
+                  title: 'Organization',
+                  child: _buildDropdownField(
+                    value: _organization,
+                    items: organizations,
+                    onChanged: (value) => setState(() => _organization = value),
+                  ),
                 ),
-                const Gap(16),
-                _buildDropdownField(
-                  label: 'Contact Email',
-                  value: _contactEmail,
-                  items: _contacts,
-                  onChanged: (value) => setState(() => _contactEmail = value),
+                _buildSection(
+                  title: 'Contact Email',
+                  child: _buildDropdownField(
+                    value: _contactEmail,
+                    items: _contacts,
+                    onChanged: (value) => setState(() => _contactEmail = value),
+                  ),
                 ),
-                const Gap(16),
-                _buildTextField(
-                  controller: _subjectController,
-                  label: 'Subject',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a subject';
-                    }
-                    return null;
-                  },
+                _buildSection(
+                  title: 'Subject',
+                  child: _buildTextField(
+                    controller: _subjectController,
+                    label: 'Subject',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a subject';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                const Gap(16),
-                _buildTextField(
-                  controller: _descriptionController,
-                  label: 'Description',
-                  maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a description';
-                    }
-                    return null;
-                  },
+                _buildSection(
+                  title: 'Description',
+                  child: _buildTextField(
+                    controller: _descriptionController,
+                    label: 'Description',
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a description';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                const Gap(16),
-                ListTile(
-                  title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
-                  trailing: const Icon(Icons.calendar_today, color: Colors.blue),
-                  onTap: _pickDueDate,
+                _buildSection(
+                  title: 'Due Date',
+                  child: ListTile(
+                    title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
+                    trailing: const Icon(Icons.calendar_today, color: Colors.blue),
+                    onTap: _pickDueDate,
+                  ),
                 ),
-                const Gap(16),
-                _buildSearchableDropdownField(
-                  label: 'Assign To',
-                  value: _assignee,
-                  items: _employees,
-                  onChanged: (value) => setState(() => _assignee = value),
+                _buildSection(
+                  title: 'Assign To',
+                  child: _buildSearchableDropdownField(
+                    value: _assignee,
+                    items: _employees,
+                    onChanged: (value) => setState(() => _assignee = value),
+                  ),
                 ),
-                const Gap(16),
-                _buildPriorityRadioButtons(),
-                const Gap(16),
-                _buildDropdownField(
-                  label: 'Category',
-                  value: _category,
-                  items: _categories,
-                  onChanged: (value) => setState(() => _category = value!),
+                _buildSection(
+                  title: 'Priority',
+                  child: _buildPriorityRadioButtons(),
+                ),
+                _buildSection(
+                  title: 'Category',
+                  child: _buildDropdownField(
+                    value: _category,
+                    items: _categories,
+                    onChanged: (value) => setState(() => _category = value!),
+                  ),
                 ),
                 const Gap(16),
                 if (_isAttachingFile)
@@ -244,14 +257,46 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     );
   }
 
+  Widget _buildSection({
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Gap(8),
+          child,
+        ],
+      ),
+    );
+  }
+
   Widget _buildDropdownField({
-    required String label,
     required String? value,
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       value: value,
       items: items.map((item) => DropdownMenuItem(
         value: item,
@@ -262,13 +307,15 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   }
 
   Widget _buildSearchableDropdownField({
-    required String label,
     required String? value,
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
     return DropdownButtonFormField<String>(
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       value: value,
       items: items.map((item) => DropdownMenuItem(
         value: item,
@@ -287,7 +334,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   }) {
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(labelText: label),
+      decoration: InputDecoration(
+        labelText: label,
+        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       maxLines: maxLines,
       validator: validator,
     );
@@ -309,7 +360,6 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Priority'),
         ..._priorities.map((priority) {
           return RadioListTile<String>(
             title: Text(priority),
@@ -317,7 +367,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
             groupValue: _priority,
             onChanged: (value) => setState(() => _priority = value!),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -363,6 +413,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
+
 
 
 
