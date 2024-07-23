@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';  // Ensure this path is correct
 import 'user_provider.dart';
+import 'home_screen.dart';  // Ensure this path is correct
 
 class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
@@ -71,7 +72,10 @@ class LogoutScreenState extends State<LogoutScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
           },
         ),
       ),
@@ -163,6 +167,7 @@ class LogoutScreenState extends State<LogoutScreen> {
     );
   }
 }
+
 
 
 
