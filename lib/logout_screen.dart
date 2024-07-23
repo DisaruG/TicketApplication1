@@ -80,6 +80,7 @@ class LogoutScreenState extends State<LogoutScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
+            const SizedBox(height: 20), // Add space between AppBar and content
             Expanded(
               child: Center(
                 child: _currentUser == null
@@ -162,6 +163,7 @@ class LogoutScreenState extends State<LogoutScreen> {
     );
   }
 }
+
 
 
 
