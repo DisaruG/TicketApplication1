@@ -15,7 +15,10 @@ class _TasksListScreenState extends State<TasksListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('tasks').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('tasks')
+            .orderBy('timestamp', descending: true) // Order by timestamp
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -110,6 +113,8 @@ class _TasksListScreenState extends State<TasksListScreen> {
     );
   }
 }
+
+
 
 
 
