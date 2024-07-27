@@ -9,41 +9,85 @@ class TaskDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(task['title']),
+        title: Text(
+          task['title'],
+          style: const TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Title: ${task['title']}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text('Description: ${task['description']}',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 10),
-            Text('Due Date: ${task['dueDate'] ?? 'No due date set'}',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 10),
-            Text('Priority: ${task['priority']}',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 10),
-            Text('Status: ${task['status']}',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 10),
-            Text('Assigned To: ${task['assignee'] ?? 'No assignee'}',
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Implement task completion functionality
-                Navigator.pop(context);
-              },
-              child: const Text('Mark as Complete'),
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          elevation: 4.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('Title:', task['title']),
+                const SizedBox(height: 10),
+                _buildDetailRow('Description:', task['description']),
+                const SizedBox(height: 10),
+                _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
+                const SizedBox(height: 10),
+                _buildDetailRow('Priority:', task['priority']),
+                const SizedBox(height: 10),
+                _buildDetailRow('Status:', task['status']),
+                const SizedBox(height: 10),
+                _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Implement task completion functionality
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.black,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      elevation: 4.0,
+                    ),
+                    child: const Text('Mark as Complete'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Row(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
+
