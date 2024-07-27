@@ -27,43 +27,49 @@ class TaskDetailsScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('Title:', task['title']),
-                const SizedBox(height: 10),
-                _buildDetailRow('Description:', task['description']),
-                const SizedBox(height: 10),
-                _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
-                const SizedBox(height: 10),
-                _buildDetailRow('Priority:', task['priority']),
-                const SizedBox(height: 10),
-                _buildDetailRow('Status:', task['status']),
-                const SizedBox(height: 10),
-                _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
-                if (task['attachedFileName'] != null) ...[
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Attached File:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      // Implement file open functionality
-                    },
-                    child: Text(
-                      task['attachedFileName'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDetailRow('Title:', task['title']),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Description:', task['description']),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Priority:', task['priority']),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Status:', task['status']),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
+                    if (task['attachedFileName'] != null) ...[
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Attached File:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          // Implement file open functionality
+                        },
+                        child: Text(
+                          task['attachedFileName'],
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
