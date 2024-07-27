@@ -40,6 +40,30 @@ class TaskDetailsScreen extends StatelessWidget {
                 _buildDetailRow('Status:', task['status']),
                 const SizedBox(height: 10),
                 _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
+                if (task['attachedFileName'] != null) ...[
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Attached File:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () {
+                      // Implement file open functionality
+                    },
+                    child: Text(
+                      task['attachedFileName'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
