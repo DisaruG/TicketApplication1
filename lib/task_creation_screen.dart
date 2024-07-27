@@ -407,6 +407,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         'contactEmail': _contactEmail,
         'attachedFileName': _attachedFile?.name,
         'status': 'Not Started',
+        'timestamp': FieldValue.serverTimestamp(), // Add this line
       });
       Navigator.pop(context, true);
     } catch (e) {
@@ -419,6 +420,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
 
 
 
