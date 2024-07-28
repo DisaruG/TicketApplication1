@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'task_creation_screen.dart';
 import 'task_details_screen.dart';
 
@@ -11,13 +12,15 @@ class TasksListScreen extends StatefulWidget {
 }
 
 class _TasksListScreenState extends State<TasksListScreen> {
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('tasks')
-            .orderBy('timestamp', descending: true) // Order by timestamp
+            .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -31,13 +34,22 @@ class _TasksListScreenState extends State<TasksListScreen> {
               ),
             );
           }
-          var tasks = snapshot.data!.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+          var tasks = snapshot.data!.docs.map((doc) {
+            var data = doc.data() as Map<String, dynamic>;
+            data['id'] = doc.id; // Add the document ID to the task data
+            return data;
+          }).toList();
           return ListView.builder(
             padding: const EdgeInsets.all(8.0),
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               var task = tasks[index];
+              bool isRead = task['readStatus'] != null &&
+                  task['readStatus'].containsKey(currentUser?.uid) &&
+                  task['readStatus'][currentUser?.uid] == true;
+
               return Card(
+                color: isRead ? Colors.white : Colors.lightBlueAccent.withOpacity(0.5), // Different colors based on read status
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 3.0,
                 child: ListTile(
@@ -55,8 +67,15 @@ class _TasksListScreenState extends State<TasksListScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
-                    );
+                      MaterialPageRoute(
+                        builder: (context) => TaskDetailsScreen(task: task),
+                      ),
+                    ).then((value) {
+                      // Update the read status for the current user when they view the task
+                      FirebaseFirestore.instance.collection('tasks').doc(task['id']).update({
+                        'readStatus.${currentUser?.uid}': true,
+                      });
+                    });
                   },
                 ),
               );
@@ -113,6 +132,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
     );
   }
 }
+
 
 
 

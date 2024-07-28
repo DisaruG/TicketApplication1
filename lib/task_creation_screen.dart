@@ -396,20 +396,23 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await FirebaseFirestore.instance.collection('tasks').add({
-        'title': _subjectController.text,
-        'description': _descriptionController.text,
-        'dueDate': _dueDate?.toString().split(' ')[0] ?? '',
-        'priority': _priority,
-        'category': _category,
-        'assignee': _assignee,
-        'organization': _organization,
-        'contactEmail': _contactEmail,
-        'attachedFileName': _attachedFile?.name,
-        'status': 'Not Started',
-        'timestamp': FieldValue.serverTimestamp(), // Add this line
-      });
-      Navigator.pop(context, true);
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('tasks').add({
+          'title': _subjectController.text,
+          'description': _descriptionController.text,
+          'dueDate': _dueDate?.toString().split(' ')[0] ?? '',
+          'priority': _priority,
+          'category': _category,
+          'assignee': _assignee,
+          'organization': _organization,
+          'contactEmail': _contactEmail,
+          'attachedFileName': _attachedFile?.name,
+          'status': 'Not Started',
+          'readStatus': {user.uid: false}, // Initialize read status for the creator
+        });
+        Navigator.pop(context, true);
+      }
     } catch (e) {
       _logger.severe("Error creating ticket", e);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -419,6 +422,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       setState(() => _isLoading = false);
     }
   }
+
 }
 
 
