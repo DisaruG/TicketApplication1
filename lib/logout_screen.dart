@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'login_screen.dart';  // Ensure this path is correct
+import 'login_screen.dart'; // Ensure this path is correct
 import 'user_provider.dart';
-import 'home_screen.dart';  // Ensure this path is correct
+import 'home_screen.dart'; // Ensure this path is correct
 
 class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
@@ -39,26 +38,19 @@ class LogoutScreenState extends State<LogoutScreen> {
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      if (_currentUser != null) {
-        // Optionally clear user data from Firestore (if needed)
-        await FirebaseFirestore.instance.collection('users').doc(_currentUser!.uid).delete();
-
-        // Sign out from FirebaseAuth
-        await FirebaseAuth.instance.signOut();
-
-        // Clear user data from the provider
-        Provider.of<UserProvider>(context, listen: false).signOut();
-
-        // Navigate to the login screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-              (route) => false,
-        );
-      }
+      await FirebaseAuth.instance.signOut();
+      Provider.of<UserProvider>(context, listen: false).signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+      );
     } catch (e) {
       print("Error signing out: $e");
       // Optionally show a dialog or snack bar indicating failure
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error signing out: $e")),
+      );
     }
   }
 
@@ -167,6 +159,7 @@ class LogoutScreenState extends State<LogoutScreen> {
     );
   }
 }
+
 
 
 
