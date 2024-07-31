@@ -11,66 +11,66 @@ class TaskDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           task['title'],
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
         ),
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 0,
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Card(
-          elevation: 4.0,
+          elevation: 6.0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDetailRow('Title:', task['title']),
-                    const SizedBox(height: 10),
-                    _buildDetailRow('Description:', task['description']),
-                    const SizedBox(height: 10),
-                    _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
-                    const SizedBox(height: 10),
-                    _buildDetailRow('Priority:', task['priority']),
-                    const SizedBox(height: 10),
-                    _buildDetailRow('Status:', task['status']),
-                    const SizedBox(height: 10),
-                    _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
-                    if (task['attachedFileName'] != null) ...[
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Attached File:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                _buildDetailRow('Title:', task['title']),
+                const SizedBox(height: 12),
+                _buildDetailRow('Description:', task['description']),
+                const SizedBox(height: 12),
+                _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
+                const SizedBox(height: 12),
+                _buildDetailRow('Priority:', task['priority']),
+                const SizedBox(height: 12),
+                _buildDetailRow('Status:', task['status']),
+                const SizedBox(height: 12),
+                _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
+                if (task['attachedFileName'] != null) ...[
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Attached File:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () {
+                      // Implement file open functionality
+                    },
+                    child: Text(
+                      task['attachedFileName'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blueAccent,
+                        decoration: TextDecoration.underline,
                       ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          // Implement file open functionality
-                        },
-                        child: Text(
-                          task['attachedFileName'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 20),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
@@ -79,14 +79,21 @@ class TaskDetailsScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.black,
+                      backgroundColor: Colors.blueAccent,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
-                      elevation: 4.0,
+                      elevation: 6.0,
+                      shadowColor: Colors.black.withOpacity(0.3),
                     ),
-                    child: const Text('Mark as Complete'),
+                    child: const Text(
+                      'Mark as Complete',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -99,20 +106,27 @@ class TaskDetailsScreen extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+        Expanded(
+          flex: 2,
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black54,
+            ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
+          flex: 3,
           child: Text(
             value,
             style: const TextStyle(
               fontSize: 16,
+              color: Colors.black87,
             ),
           ),
         ),
@@ -120,4 +134,5 @@ class TaskDetailsScreen extends StatelessWidget {
     );
   }
 }
+
 
