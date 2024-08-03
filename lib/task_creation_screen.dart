@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gap/gap.dart';
 import 'package:logging/logging.dart';
@@ -23,9 +22,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   String? _assignee;
   String? _organization;
   String? _contactEmail;
-  PlatformFile? _attachedFile;
   bool _isLoading = false;
-  bool _isAttachingFile = false;
   List<String> _employees = [];
   List<String> organizations = ['Regional Development Bank'];
 
@@ -177,43 +174,6 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     onChanged: (value) => setState(() => _category = value!),
                   ),
                 ),
-                const Gap(16),
-                if (_isAttachingFile)
-                  Center(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const CupertinoActivityIndicator(),
-                      label: const Text('Attaching...'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.grey.shade200,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        elevation: 4.0,
-                      ),
-                    ),
-                  )
-                else
-                  ElevatedButton.icon(
-                    onPressed: _attachFile,
-                    icon: const Icon(Icons.attach_file),
-                    label: const Text('Attach File'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.grey.shade200,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      elevation: 4.0,
-                    ),
-                  ),
-                if (_attachedFile != null) ...[
-                  const Gap(10),
-                  Text('Attached: ${_attachedFile!.name}'),
-                ],
                 const Gap(16),
                 if (_isLoading)
                   Center(
@@ -378,20 +338,6 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     );
   }
 
-  void _attachFile() async {
-    setState(() => _isAttachingFile = true);
-
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-      if (result != null && result.files.isNotEmpty) {
-        setState(() => _attachedFile = result.files.first);
-      }
-    } finally {
-      setState(() => _isAttachingFile = false);
-    }
-  }
-
   void _createTicket() async {
     setState(() => _isLoading = true);
 
@@ -405,7 +351,6 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         'assignee': _assignee,
         'organization': _organization,
         'contactEmail': _contactEmail,
-        'attachedFileName': _attachedFile?.name,
         'status': 'Not Started',
         'timestamp': FieldValue.serverTimestamp(), // Add this line
       });
@@ -420,6 +365,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
+
 
 
 
