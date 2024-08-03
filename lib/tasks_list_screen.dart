@@ -38,6 +38,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
             itemBuilder: (context, index) {
               var task = tasks[index];
               return Card(
+                color: task['isRead'] == true ? Colors.white : Colors.yellow[100],
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 3.0,
                 child: ListTile(
@@ -56,7 +57,11 @@ class _TasksListScreenState extends State<TasksListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
-                    );
+                    ).then((value) {
+                      if (value == true) {
+                        setState(() {});
+                      }
+                    });
                   },
                 ),
               );
@@ -113,6 +118,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
     );
   }
 }
+
 
 
 
