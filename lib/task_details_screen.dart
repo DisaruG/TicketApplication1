@@ -45,31 +45,6 @@ class TaskDetailsScreen extends StatelessWidget {
                 _buildDetailRow('Status:', task['status']),
                 const SizedBox(height: 12),
                 _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
-                if (task['attachedFileName'] != null) ...[
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Attached File:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () {
-                      // Implement file open functionality
-                    },
-                    child: Text(
-                      task['attachedFileName'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.blueAccent,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
@@ -134,5 +109,6 @@ class TaskDetailsScreen extends StatelessWidget {
     );
   }
 }
+
 
 
