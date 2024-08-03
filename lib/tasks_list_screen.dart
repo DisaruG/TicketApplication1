@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'task_creation_screen.dart';
 import 'task_details_screen.dart';
@@ -21,7 +22,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CupertinoActivityIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
@@ -70,7 +71,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: const Icon(CupertinoIcons.add),
         onPressed: () async {
           bool? isTaskCreated = await Navigator.push(
             context,
@@ -87,12 +88,12 @@ class _TasksListScreenState extends State<TasksListScreen> {
   Widget _buildPriorityIcon(String priority) {
     switch (priority) {
       case 'High':
-        return const Icon(Icons.priority_high, color: Colors.red);
+        return const Icon(CupertinoIcons.exclamationmark_triangle, color: Colors.red);
       case 'Medium':
-        return const Icon(Icons.priority_high, color: Colors.green);
+        return const Icon(CupertinoIcons.exclamationmark_circle, color: Colors.orange);
       case 'Low':
       default:
-        return const Icon(Icons.priority_high, color: Colors.grey);
+        return const Icon(CupertinoIcons.circle, color: Colors.grey);
     }
   }
 
@@ -118,6 +119,8 @@ class _TasksListScreenState extends State<TasksListScreen> {
     );
   }
 }
+
+
 
 
 
