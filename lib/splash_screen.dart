@@ -165,6 +165,6 @@ class CustomNavigationState extends State<SplashScreen>
       ),
     );
   }
-} //Splash Screen
+} // need to upgrade the Splash Screen
 
 
