@@ -323,18 +323,19 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   }
 
   Widget _buildPriorityRadioButtons() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ..._priorities.map((priority) {
-          return RadioListTile<String>(
-            title: Text(priority),
-            value: priority,
-            groupValue: _priority,
-            onChanged: (value) => setState(() => _priority = value!),
-          );
-        }),
-      ],
+    return Row(
+      children: _priorities.map((priority) {
+        return Row(
+          children: [
+            Radio<String>(
+              value: priority,
+              groupValue: _priority,
+              onChanged: (value) => setState(() => _priority = value!),
+            ),
+            Text(priority),
+          ],
+        );
+      }).toList(),
     );
   }
 
@@ -352,7 +353,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         'organization': _organization,
         'contactEmail': _contactEmail,
         'status': 'Not Started',
-        'timestamp': FieldValue.serverTimestamp(), // Add this line
+        'isRead': false, // Set isRead to false on creation
+        'timestamp': FieldValue.serverTimestamp(),
       });
       Navigator.pop(context, true);
     } catch (e) {
@@ -365,24 +367,3 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     }
   }
 }
-
-//task creation screen
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
