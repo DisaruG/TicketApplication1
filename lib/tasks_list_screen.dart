@@ -32,7 +32,10 @@ class _TasksListScreenState extends State<TasksListScreen> {
               ),
             );
           }
-          var tasks = snapshot.data!.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+          var tasks = snapshot.data!.docs.map((doc) {
+            return {'id': doc.id, ...doc.data() as Map<String, dynamic>};
+          }).toList();
+
           return ListView.builder(
             padding: const EdgeInsets.all(8.0),
             itemCount: tasks.length,
@@ -54,15 +57,12 @@ class _TasksListScreenState extends State<TasksListScreen> {
                     ],
                   ),
                   trailing: _buildStatusChip(task['status']),
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
-                    ).then((value) {
-                      if (value == true) {
-                        setState(() {});
-                      }
-                    });
+                    );
+                    _markTaskAsRead(task['id']);
                   },
                 ),
               );
@@ -118,15 +118,16 @@ class _TasksListScreenState extends State<TasksListScreen> {
       backgroundColor: backgroundColor,
     );
   }
+
+  void _markTaskAsRead(String taskId) async {
+    try {
+      await FirebaseFirestore.instance.collection('tasks').doc(taskId).update({
+        'isRead': true,
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error marking task as read')),
+      );
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
