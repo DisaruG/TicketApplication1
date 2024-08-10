@@ -17,7 +17,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('tasks')
+            .collection('tickets') // Ensure collection name is correct
             .orderBy('timestamp', descending: true) // Order by timestamp
             .snapshots(),
         builder: (context, snapshot) {
@@ -33,7 +33,17 @@ class _TasksListScreenState extends State<TasksListScreen> {
             );
           }
           var tasks = snapshot.data!.docs.map((doc) {
-            return {'id': doc.id, ...doc.data() as Map<String, dynamic>};
+            final data = doc.data() as Map<String, dynamic>;
+            return {
+              'id': doc.id,
+              'subject': data['subject'] ?? 'No Subject',
+              'description': data['description'] ?? 'No Description', // Ensure description is included
+              'dueDate': data['dueDate'] ?? 'No Due Date',
+              'assignee': data['assignee'] ?? 'Unassigned',
+              'priority': data['priority'] ?? 'Low',
+              'status': data['status'] ?? 'Not Started',
+              'isRead': data['isRead'] ?? false,
+            };
           }).toList();
 
           return ListView.builder(
@@ -47,7 +57,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                 elevation: 3.0,
                 child: ListTile(
                   leading: _buildPriorityIcon(task['priority']),
-                  title: Text(task['title']),
+                  title: Text(task['subject']),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -58,10 +68,14 @@ class _TasksListScreenState extends State<TasksListScreen> {
                   ),
                   trailing: _buildStatusChip(task['status']),
                   onTap: () async {
+                    // Print task data for debugging
+                    print('Navigating to TaskDetailsScreen with task: $task');
+
                     await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
                     );
+
                     _markTaskAsRead(task['id']);
                   },
                 ),
@@ -121,7 +135,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
 
   void _markTaskAsRead(String taskId) async {
     try {
-      await FirebaseFirestore.instance.collection('tasks').doc(taskId).update({
+      await FirebaseFirestore.instance.collection('tickets').doc(taskId).update({
         'isRead': true,
       });
     } catch (e) {
