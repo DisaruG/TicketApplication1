@@ -7,10 +7,13 @@ class TaskDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Debug print to ensure data is being passed correctly
+    print('TaskDetailsScreen received task: $task');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          task['title'],
+          task['subject'] ?? 'No Subject',
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -34,22 +37,22 @@ class TaskDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('Title:', task['title']),
+                _buildDetailRow('Title:', task['subject'] ?? 'No Title'),
                 const SizedBox(height: 12),
-                _buildDetailRow('Description:', task['description']),
+                _buildDetailRow('Description:', task['description'] ?? 'No Description'),
                 const SizedBox(height: 12),
-                _buildDetailRow('Due Date:', task['dueDate'] ?? 'No due date set'),
+                _buildDetailRow('Due Date:', task['dueDate'] ?? 'No Due Date'),
                 const SizedBox(height: 12),
-                _buildDetailRow('Priority:', task['priority']),
+                _buildDetailRow('Priority:', task['priority'] ?? 'Low'),
                 const SizedBox(height: 12),
-                _buildDetailRow('Status:', task['status']),
+                _buildDetailRow('Status:', task['status'] ?? 'Not Started'),
                 const SizedBox(height: 12),
-                _buildDetailRow('Assigned To:', task['assignee'] ?? 'No assignee'),
+                _buildDetailRow('Assigned To:', task['assignee'] ?? 'No Assignee'),
                 const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Implement task completion functionality
+                      // Implement task completion functionality if needed
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -109,6 +112,3 @@ class TaskDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-
-
