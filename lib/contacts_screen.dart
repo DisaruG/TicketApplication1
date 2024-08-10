@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'task_creation_screen.dart'; // Import the TaskCreationScreen
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({super.key});
@@ -29,16 +30,7 @@ class ContactsScreenState extends State<ContactsScreen> {
   }
 
   void _onSearchChanged() {
-    // Debounce mechanism
-    if (_searchController.text.isEmpty) {
-      _filterContacts('');
-    } else {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (_searchController.text == _searchController.value.text) {
-          _filterContacts(_searchController.text);
-        }
-      });
-    }
+    _filterContacts(_searchController.text);
   }
 
   Future<void> _fetchContacts() async {
@@ -60,7 +52,6 @@ class ContactsScreenState extends State<ContactsScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      // Handle any errors
       print("Error fetching contacts: $e");
     }
   }
@@ -72,15 +63,21 @@ class ContactsScreenState extends State<ContactsScreen> {
         final emailLower = contact['email']!.toLowerCase();
         final searchLower = query.toLowerCase();
 
-        return nameLower.contains(searchLower) || emailLower.contains(searchLower);
+        return nameLower.contains(searchLower) ||
+            emailLower.contains(searchLower);
       }).toList();
     });
   }
 
-  void _messageContact(String email) {
-    // Implement messaging logic here
-    print('Messaging contact with email: $email');
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => MessagingScreen(email: email)));
+  void _assignToContact(String name) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TicketCreationScreen(
+          initialAssignee: name,
+        ),
+      ),
+    );
   }
 
   @override
@@ -90,20 +87,19 @@ class ContactsScreenState extends State<ContactsScreen> {
       body: Column(
         children: [
           buildSearchBar(),
-          _isLoading ? const Center(child: CircularProgressIndicator()) : buildContactList(),
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : buildContactList(),
         ],
       ),
     );
   }
 
   PreferredSizeWidget buildAppBar() {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(60.0),
-      child: AppBar(
-        title: const Text('Contacts', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
+    return AppBar(
+      title: const Text('Contacts', style: TextStyle(color: Colors.black)),
+      backgroundColor: Colors.white,
+      elevation: 0,
     );
   }
 
@@ -139,17 +135,15 @@ class ContactsScreenState extends State<ContactsScreen> {
             elevation: 4.0,
             child: ListTile(
               contentPadding: const EdgeInsets.all(16.0),
-              title: Text(contact['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(contact['name']!,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(contact['email']!),
               trailing: IconButton(
                 icon: const Icon(Icons.assignment_outlined, color: Colors.blue),
                 onPressed: () {
-                  _messageContact(contact['email']);
+                  _assignToContact(contact['name']!);
                 },
               ),
-              onTap: () {
-                // Implement contact interaction functionality if needed
-              },
             ),
           );
         },
@@ -157,16 +151,3 @@ class ContactsScreenState extends State<ContactsScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
