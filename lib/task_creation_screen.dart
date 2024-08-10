@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +5,9 @@ import 'package:gap/gap.dart';
 import 'package:logging/logging.dart';
 
 class TicketCreationScreen extends StatefulWidget {
-  const TicketCreationScreen({super.key});
+  final String? initialAssignee;
+
+  const TicketCreationScreen({super.key, this.initialAssignee});
 
   @override
   TicketCreationScreenState createState() => TicketCreationScreenState();
@@ -42,6 +43,12 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   void initState() {
     super.initState();
     _fetchCurrentUserEmail().then((_) => _fetchUsers());
+
+    // Set the initial assignee if provided
+    if (widget.initialAssignee != null) {
+      _assignee = widget.initialAssignee;
+    }
+
     _organization = organizations.first;
   }
 
@@ -67,7 +74,8 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   Future<void> _fetchUsers() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot snapshot =
+      await FirebaseFirestore.instance.collection('users').get();
 
       List<String> users = snapshot.docs.map((doc) {
         return (doc['displayName'] ?? 'No Name') as String;
@@ -79,6 +87,9 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
 
       setState(() {
         _employees = users;
+        if (_assignee != null && !_employees.contains(_assignee)) {
+          _assignee = null;
+        }
       });
     } catch (e) {
       _logger.severe("Error fetching users", e);
@@ -149,22 +160,31 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 _buildSection(
                   title: 'Due Date',
                   child: ListTile(
-                    title: Text('Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
-                    trailing: const Icon(Icons.calendar_today, color: Colors.blue),
+                    title: Text(
+                        'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
+                    trailing:
+                    const Icon(Icons.calendar_today, color: Colors.blue),
                     onTap: _pickDueDate,
                   ),
                 ),
                 _buildSection(
                   title: 'Assign To',
-                  child: _buildSearchableDropdownField(
+                  child: _employees.isEmpty
+                      ? const CircularProgressIndicator()
+                      : _buildDropdownField(
                     value: _assignee,
                     items: _employees,
-                    onChanged: (value) => setState(() => _assignee = value),
+                    onChanged: (value) =>
+                        setState(() => _assignee = value),
                   ),
                 ),
                 _buildSection(
                   title: 'Priority',
-                  child: _buildPriorityRadioButtons(),
+                  child: _buildDropdownField(
+                    value: _priority,
+                    items: _priorities,
+                    onChanged: (value) => setState(() => _priority = value!),
+                  ),
                 ),
                 _buildSection(
                   title: 'Category',
@@ -174,47 +194,15 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     onChanged: (value) => setState(() => _category = value!),
                   ),
                 ),
-                const Gap(16),
-                if (_isLoading)
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.black,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        elevation: 4.0,
-                      ),
-                      child: const CupertinoActivityIndicator(color: Colors.white),
-                    ),
-                  )
-                else
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() == true) {
-                        if (_assignee == null || _assignee!.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please assign the task to someone.')),
-                          );
-                        } else {
-                          _createTicket();
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.black,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      elevation: 4.0,
-                    ),
+                const Gap(20),
+                Center(
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                    onPressed: _createTicket,
                     child: const Text('Create Ticket'),
                   ),
+                ),
               ],
             ),
           ),
@@ -223,72 +211,18 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required Widget child,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const Gap(8),
-          child,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      value: value,
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item),
-      )).toList(),
-      onChanged: onChanged,
-    );
-  }
-
-  Widget _buildSearchableDropdownField({
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      value: value,
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item),
-      )).toList(),
-      onChanged: onChanged,
-      isExpanded: true,
+  Widget _buildSection({required String title, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Gap(8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const Gap(8),
+        child,
+      ],
     );
   }
 
@@ -302,68 +236,86 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
       ),
       maxLines: maxLines,
       validator: validator,
     );
   }
 
-  void _pickDueDate() async {
-    DateTime? picked = await showDatePicker(
+  Widget _buildDropdownField({
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      items: items.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  Future<void> _pickDueDate() async {
+    DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(2100),
     );
-    if (picked != null) {
-      setState(() => _dueDate = picked);
+    if (pickedDate != null && pickedDate != _dueDate) {
+      setState(() {
+        _dueDate = pickedDate;
+      });
     }
   }
 
-  Widget _buildPriorityRadioButtons() {
-    return Row(
-      children: _priorities.map((priority) {
-        return Row(
-          children: [
-            Radio<String>(
-              value: priority,
-              groupValue: _priority,
-              onChanged: (value) => setState(() => _priority = value!),
-            ),
-            Text(priority),
-          ],
-        );
-      }).toList(),
-    );
-  }
-
-  void _createTicket() async {
-    setState(() => _isLoading = true);
-
-    try {
-      await FirebaseFirestore.instance.collection('tasks').add({
-        'title': _subjectController.text,
-        'description': _descriptionController.text,
-        'dueDate': _dueDate?.toString().split(' ')[0] ?? '',
-        'priority': _priority,
-        'category': _category,
-        'assignee': _assignee,
-        'organization': _organization,
-        'contactEmail': _contactEmail,
-        'status': 'Not Started',
-        'isRead': false, // Set isRead to false on creation
-        'timestamp': FieldValue.serverTimestamp(),
+  Future<void> _createTicket() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        _isLoading = true;
       });
-      Navigator.pop(context, true);
-    } catch (e) {
-      _logger.severe("Error creating ticket", e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error creating ticket')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
+
+      try {
+        final ticketData = {
+          'organization': _organization,
+          'contactEmail': _contactEmail,
+          'subject': _subjectController.text,
+          'description': _descriptionController.text,
+          'dueDate': _dueDate?.toIso8601String(),
+          'assignee': _assignee,
+          'priority': _priority,
+          'category': _category,
+          'timestamp': FieldValue.serverTimestamp(),
+        };
+
+        await FirebaseFirestore.instance.collection('tickets').add(ticketData);
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        Navigator.pop(context); // Go back to the previous screen
+      } catch (e) {
+        _logger.severe("Error creating ticket", e);
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating ticket: $e')),
+        );
+      }
     }
   }
 }
