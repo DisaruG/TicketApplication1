@@ -110,46 +110,53 @@ class CustomBottomNavigationBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(3, (index) {
             final isSelected = currentIndex == index;
-            return GestureDetector(
-              onTap: () => onTap(index),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Stack(
-                    alignment: Alignment.center,
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                child: Container(
+                  height: 50.0,
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        width: isSelected ? 50.0 : 0.0,
-                        height: isSelected ? 25.0 : 0.0,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            width: isSelected ? 50.0 : 0.0,
+                            height: isSelected ? 25.0 : 0.0,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                          ),
+                          Icon(
+                            index == 0
+                                ? Icons.assignment
+                                : index == 1
+                                ? Icons.contacts
+                                : Icons.person,
+                            color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+                            size: 24.0, // Adjust icon size
+                          ),
+                        ],
                       ),
-                      Icon(
-                        index == 0
-                            ? Icons.assignment
-                            : index == 1
-                            ? Icons.contacts
-                            : Icons.person,
-                        color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+                      const SizedBox(height: 4.0),
+                      Text(
+                        labels[index],
+                        style: TextStyle(
+                          color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 12.0,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    labels[index],
-                    style: TextStyle(
-                      color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      fontSize: 12.0,
-                    ),
-                  ),
-                ],
+                ),
               ),
             );
           }),
