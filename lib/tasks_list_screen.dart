@@ -28,7 +28,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
             return const Center(
               child: Text(
                 'No tasks available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18, color: Color(0xFF333333)), // Charcoal Gray
               ),
             );
           }
@@ -52,7 +52,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
             itemBuilder: (context, index) {
               var task = tasks[index];
               return Card(
-                color: task['isRead'] == true ? Colors.white : Colors.yellow[100],
+                color: task['isRead'] == true ? const Color(0xFFF4F4F4) : const Color(0xFFE0F7FA), // Soft Gray and Teal
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 3.0,
                 child: ListTile(
@@ -65,6 +65,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
+                          color: Color(0xFF003366), // Deep Navy Blue
                         ),
                       ),
                       const SizedBox(height: 4.0),
@@ -73,6 +74,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         style: const TextStyle(
                           fontWeight: FontWeight.w500, // Semi-bold title
                           fontSize: 14,
+                          color: Color(0xFF333333), // Charcoal Gray
                         ),
                       ),
                       const SizedBox(height: 4.0),
@@ -80,7 +82,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         'Due: ${task['dueDate']}', // Show due date
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: Color(0xFF333333), // Charcoal Gray
                         ),
                       ),
                     ],
@@ -104,7 +106,8 @@ class _TasksListScreenState extends State<TasksListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(CupertinoIcons.add),
+        child: const Icon(CupertinoIcons.add, color: Colors.white), // White icon
+        backgroundColor: const Color(0xFF003366), // Deep Navy Blue
         onPressed: () async {
           bool? isTaskCreated = await Navigator.push(
             context,
@@ -122,14 +125,14 @@ class _TasksListScreenState extends State<TasksListScreen> {
     Color backgroundColor;
     switch (status) {
       case 'In Progress':
-        backgroundColor = Colors.blue;
+        backgroundColor = const Color(0xFF003366); // Deep Navy Blue
         break;
       case 'Completed':
-        backgroundColor = Colors.green;
+        backgroundColor = const Color(0xFF4CAF50); // Green
         break;
       case 'Not Started':
       default:
-        backgroundColor = Colors.grey;
+        backgroundColor = const Color(0xFFCCCCCC); // Light Gray
     }
     return Chip(
       label: Text(
