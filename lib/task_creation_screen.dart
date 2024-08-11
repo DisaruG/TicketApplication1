@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gap/gap.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter/cupertino.dart'; // Import Cupertino for the iOS-style indicator
 
 class TicketCreationScreen extends StatefulWidget {
   final String? initialAssignee;
@@ -174,8 +175,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                       : _buildDropdownField(
                     value: _assignee,
                     items: _employees,
-                    onChanged: (value) =>
-                        setState(() => _assignee = value),
+                    onChanged: (value) => setState(() => _assignee = value),
                   ),
                 ),
                 _buildSection(
@@ -196,11 +196,27 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                 ),
                 const Gap(20),
                 Center(
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                    onPressed: _createTicket,
-                    child: const Text('Create Ticket'),
+                  child: SizedBox(
+                    width: double.infinity, // Make button full-width
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0), // Increase vertical padding
+                        textStyle: const TextStyle(
+                          fontSize: 18, // Increase font size
+                          fontWeight: FontWeight.bold,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                        ),
+                      ),
+                      onPressed: _isLoading ? null : _createTicket,
+                      child: _isLoading
+                          ? CupertinoActivityIndicator(
+                        color: Colors.white,
+                        radius: 12.0, // Smaller radius for the loading indicator
+                      )
+                          : const Text('Create Ticket'),
+                    ),
                   ),
                 ),
               ],
