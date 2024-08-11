@@ -55,7 +55,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFE0E0E0), Color(0xFFFFFFFF)],
             begin: Alignment.topCenter,
@@ -99,7 +99,7 @@ class LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       textStyle: const TextStyle(fontSize: 18),
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color(0xFF003366), // Deep Navy Blue
                       shadowColor: Colors.black.withOpacity(0.2),
                       elevation: 5,
                       shape: RoundedRectangleBorder(
@@ -128,4 +128,3 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
