@@ -56,14 +56,33 @@ class _TasksListScreenState extends State<TasksListScreen> {
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 3.0,
                 child: ListTile(
-                  leading: _buildPriorityIcon(task['priority']),
-                  title: Text(task['subject']),
-                  subtitle: Column(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                  title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        task['assignee'], // Show assignee's name at the top
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: 4.0),
-                      Text('Due: ${task['dueDate']}'),
-                      Text('Assigned to: ${task['assignee']}'),
+                      Text(
+                        task['subject'], // Show task title
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500, // Semi-bold title
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        'Due: ${task['dueDate']}', // Show due date
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                   trailing: _buildStatusChip(task['status']),
@@ -97,18 +116,6 @@ class _TasksListScreenState extends State<TasksListScreen> {
         },
       ),
     );
-  }
-
-  Widget _buildPriorityIcon(String priority) {
-    switch (priority) {
-      case 'High':
-        return const Icon(CupertinoIcons.exclamationmark_triangle, color: Colors.red);
-      case 'Medium':
-        return const Icon(CupertinoIcons.exclamationmark_circle, color: Colors.orange);
-      case 'Low':
-      default:
-        return const Icon(CupertinoIcons.circle, color: Colors.grey);
-    }
   }
 
   Widget _buildStatusChip(String status) {
