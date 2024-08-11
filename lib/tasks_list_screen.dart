@@ -5,7 +5,9 @@ import 'task_creation_screen.dart';
 import 'task_details_screen.dart';
 
 class TasksListScreen extends StatefulWidget {
-  const TasksListScreen({super.key});
+  final String? searchQuery;
+
+  const TasksListScreen({super.key, this.searchQuery});
 
   @override
   _TasksListScreenState createState() => _TasksListScreenState();
@@ -32,12 +34,14 @@ class _TasksListScreenState extends State<TasksListScreen> {
               ),
             );
           }
+
+          // Filter tasks based on search query
           var tasks = snapshot.data!.docs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
             return {
               'id': doc.id,
               'subject': data['subject'] ?? 'No Subject',
-              'description': data['description'] ?? 'No Description', // Ensure description is included
+              'description': data['description'] ?? 'No Description',
               'dueDate': data['dueDate'] ?? 'No Due Date',
               'assignee': data['assignee'] ?? 'Unassigned',
               'priority': data['priority'] ?? 'Low',
@@ -45,6 +49,12 @@ class _TasksListScreenState extends State<TasksListScreen> {
               'isRead': data['isRead'] ?? false,
             };
           }).toList();
+
+          // Apply search filter
+          if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
+            tasks = tasks.where((task) =>
+                task['assignee'].toLowerCase().contains(widget.searchQuery!.toLowerCase())).toList();
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(8.0),
