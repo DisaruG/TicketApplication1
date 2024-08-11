@@ -40,6 +40,12 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
 
   final Logger _logger = Logger('TicketCreationScreen');
 
+  // Define color palette
+  final Color _primaryColor = const Color(0xFF003366); // Deep Navy Blue
+  final Color _secondaryColor = const Color(0xFFF4F4F4); // Soft Gray
+  final Color _accentColor = const Color(0xFF008080); // Teal
+  final Color _textColor = const Color(0xFF333333); // Charcoal Gray
+
   @override
   void initState() {
     super.initState();
@@ -101,11 +107,12 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
+        backgroundColor: _secondaryColor,
+        title: Text(
           'Create New Ticket',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: _textColor),
         ),
+        iconTheme: IconThemeData(color: _textColor), // Change back arrow color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -164,7 +171,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     title: Text(
                         'Due Date: ${_dueDate == null ? "Select Date" : _dueDate.toString().split(' ')[0]}'),
                     trailing:
-                    const Icon(Icons.calendar_today, color: Colors.blue),
+                    Icon(Icons.calendar_today, color: _accentColor),
                     onTap: _pickDueDate,
                   ),
                 ),
@@ -200,6 +207,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                     width: double.infinity, // Make button full-width
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: _primaryColor, // Text color
                         padding: const EdgeInsets.symmetric(vertical: 16.0), // Increase vertical padding
                         textStyle: const TextStyle(
                           fontSize: 18, // Increase font size
@@ -211,7 +219,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
                       ),
                       onPressed: _isLoading ? null : _createTicket,
                       child: _isLoading
-                          ? CupertinoActivityIndicator(
+                          ? const CupertinoActivityIndicator(
                         color: Colors.white,
                         radius: 12.0, // Smaller radius for the loading indicator
                       )
@@ -234,7 +242,11 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
         const Gap(8),
         Text(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: _textColor, // Text color
+          ),
         ),
         const Gap(8),
         child,
@@ -253,6 +265,10 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: _accentColor),
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
