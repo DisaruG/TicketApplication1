@@ -67,6 +67,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                 elevation: 3.0,
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                  leading: _getPriorityIcon(task['priority']), // Add priority icon here
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -151,6 +152,38 @@ class _TasksListScreenState extends State<TasksListScreen> {
       ),
       backgroundColor: backgroundColor,
     );
+  }
+
+  Widget _getPriorityIcon(String priority) {
+    IconData iconData;
+    switch (priority) {
+      case 'High':
+        iconData = CupertinoIcons.exclamationmark_triangle;
+        break;
+      case 'Medium':
+        iconData = CupertinoIcons.exclamationmark_circle;
+        break;
+      case 'Low':
+      default:
+        iconData = CupertinoIcons.circle;
+    }
+    return Icon(
+      iconData,
+      color: _getPriorityColor(priority),
+      size: 24.0,
+    );
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'High':
+        return Colors.red;
+      case 'Medium':
+        return Colors.orange;
+      case 'Low':
+      default:
+        return Colors.green;
+    }
   }
 
   void _markTaskAsRead(String taskId) async {
