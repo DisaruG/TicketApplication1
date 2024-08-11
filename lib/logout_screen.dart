@@ -46,7 +46,6 @@ class LogoutScreenState extends State<LogoutScreen> {
             (route) => false,
       );
     } catch (e) {
-      print("Error signing out: $e");
       // Optionally show a dialog or snack bar indicating failure
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error signing out: $e")),
@@ -72,7 +71,7 @@ class LogoutScreenState extends State<LogoutScreen> {
         ),
       ),
       body: Container(
-        color: Colors.grey.shade200,
+        color: const Color(0xFFF4F4F4), // Soft Gray background color
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
@@ -108,6 +107,7 @@ class LogoutScreenState extends State<LogoutScreen> {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF003366), // Deep Navy Blue
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -115,7 +115,7 @@ class LogoutScreenState extends State<LogoutScreen> {
                       _email ?? 'No Email',
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Colors.grey,
+                        color: Color(0xFF333333), // Charcoal Gray
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -131,7 +131,7 @@ class LogoutScreenState extends State<LogoutScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
+                        backgroundColor: const Color(0xFF003366), // Deep Navy Blue
                         shadowColor: Colors.black.withOpacity(0.2),
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -149,7 +149,10 @@ class LogoutScreenState extends State<LogoutScreen> {
               padding: EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
                 'Designed and Developed by Disaru Gunawardhana',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF333333), // Charcoal Gray
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -159,16 +162,3 @@ class LogoutScreenState extends State<LogoutScreen> {
     );
   }
 }
-
-//logout screen
-
-
-
-
-
-
-
-
-
-
-
