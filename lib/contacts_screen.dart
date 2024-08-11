@@ -97,7 +97,7 @@ class ContactsScreenState extends State<ContactsScreen> {
 
   PreferredSizeWidget buildAppBar() {
     return AppBar(
-      title: const Text('Contacts', style: TextStyle(color: Colors.black)),
+      title: const Text('Contacts', style: TextStyle(color: Color(0xFF333333))), // Charcoal Gray
       backgroundColor: Colors.white,
       elevation: 0,
     );
@@ -113,9 +113,9 @@ class ContactsScreenState extends State<ContactsScreen> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          prefixIcon: const Icon(Icons.search),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFF003366)), // Deep Navy Blue
           filled: true,
-          fillColor: Colors.grey.shade200,
+          fillColor: Color(0xFFF4F4F4), // Soft Gray
         ),
       ),
     );
@@ -136,10 +136,10 @@ class ContactsScreenState extends State<ContactsScreen> {
             child: ListTile(
               contentPadding: const EdgeInsets.all(16.0),
               title: Text(contact['name']!,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF333333))), // Charcoal Gray
               subtitle: Text(contact['email']!),
               trailing: IconButton(
-                icon: const Icon(Icons.assignment_outlined, color: Colors.blue),
+                icon: const Icon(Icons.assignment_outlined, color: Color(0xFF003366)), // Deep Navy Blue
                 onPressed: () {
                   _assignToContact(contact['name']!);
                 },
