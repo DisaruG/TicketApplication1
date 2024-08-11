@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'logout_screen.dart';
+import 'task_screen_delegate.dart';
 import 'tasks_list_screen.dart';
 import 'contacts_screen.dart';
 
@@ -38,13 +39,24 @@ class HomeScreenState extends State<HomeScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: const Text(
-        'Dashboard', // Set a constant title for the AppBar
+        'Dashboard',
         style: TextStyle(color: Color(0xFF333333)), // Charcoal Gray
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search, color: Color(0xFF003366)), // Deep Navy Blue
+          onPressed: () {
+            showSearch(
+              context: context,
+              delegate: TicketSearchDelegate(),
+            );
+          },
+        ),
+      ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10.0),
         child: Container(
-          color: Color(0xFFF4F4F4), // Soft Gray
+          color: const Color(0xFFF4F4F4), // Soft Gray
           height: 1.0,
         ),
       ),
@@ -85,7 +97,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Color(0xFF003366).withOpacity(0.2), // Deep Navy Blue with opacity
+            color: const Color(0xFF003366).withOpacity(0.2), // Deep Navy Blue with opacity
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, -2),
@@ -113,7 +125,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                         height: isSelected ? 25.0 : 0.0,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
+                              ? const Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(15.0),
                         ),
@@ -124,7 +136,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                             : index == 1
                             ? Icons.contacts
                             : Icons.person,
-                        color: isSelected ? Color(0xFF003366) : Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+                        color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
                       ),
                     ],
                   ),
@@ -132,7 +144,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   Text(
                     labels[index],
                     style: TextStyle(
-                      color: isSelected ? Color(0xFF003366) : Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+                      color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12.0,
                     ),
