@@ -39,12 +39,12 @@ class HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       title: const Text(
         'Dashboard', // Set a constant title for the AppBar
-        style: TextStyle(color: Colors.black),
+        style: TextStyle(color: Color(0xFF333333)), // Charcoal Gray
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(10.0),
         child: Container(
-          color: Colors.grey.shade300,
+          color: Color(0xFFF4F4F4), // Soft Gray
           height: 1.0,
         ),
       ),
@@ -85,7 +85,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Color(0xFF003366).withOpacity(0.2), // Deep Navy Blue with opacity
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, -2),
@@ -112,15 +112,19 @@ class CustomBottomNavigationBar extends StatelessWidget {
                         width: isSelected ? 50.0 : 0.0,
                         height: isSelected ? 25.0 : 0.0,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.grey.withOpacity(0.2) : Colors.transparent,
+                          color: isSelected
+                              ? Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
                       Icon(
-                        index == 0 ? Icons.assignment :
-                        index == 1 ? Icons.contacts :
-                        Icons.person,
-                        color: isSelected ? Colors.black : Colors.grey,
+                        index == 0
+                            ? Icons.assignment
+                            : index == 1
+                            ? Icons.contacts
+                            : Icons.person,
+                        color: isSelected ? Color(0xFF003366) : Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
                       ),
                     ],
                   ),
@@ -128,7 +132,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   Text(
                     labels[index],
                     style: TextStyle(
-                      color: isSelected ? Colors.black : Colors.grey,
+                      color: isSelected ? Color(0xFF003366) : Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12.0,
                     ),
