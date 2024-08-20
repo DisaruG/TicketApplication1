@@ -49,7 +49,7 @@ class TicketCreationScreenState extends State<TicketCreationScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCurrentUserEmail().then((_) => _fetchUsers());
+    _fetchCurrentUserEmail().then((_) => _fetchUsers()); //nigga
 
     // Set the initial assignee if provided
     if (widget.initialAssignee != null) {
