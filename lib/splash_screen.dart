@@ -21,7 +21,9 @@ class CustomNavigationState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _logoScaleAnimation;
+  late Animation<double> _logoRotationAnimation;
   late Animation<double> _opacityAnimation;
+  late Animation<Color?> _backgroundAnimation;
 
   int _currentCompanyNameIndex = 0;
 
@@ -33,13 +35,22 @@ class CustomNavigationState extends State<SplashScreen>
   }
 
   void _initializeAnimations() {
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
 
     _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeOut,
+      ),
+    );
+
+    _logoRotationAnimation = Tween<double>(begin: 0.0, end: 0.05).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
       ),
     );
 
@@ -49,12 +60,23 @@ class CustomNavigationState extends State<SplashScreen>
         curve: Curves.easeInOut,
       ),
     );
+
+    _backgroundAnimation = ColorTween(
+      begin: Colors.blue.shade700,
+      end: Colors.blue.shade300,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.linear,
+      ),
+    );
   }
 
   void _startNameTransition() {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        _currentCompanyNameIndex = (_currentCompanyNameIndex + 1) % widget.companyNames.length;
+        _currentCompanyNameIndex =
+            (_currentCompanyNameIndex + 1) % widget.companyNames.length;
       });
       if (_currentCompanyNameIndex < widget.companyNames.length - 1) {
         _startNameTransition();
@@ -78,7 +100,6 @@ class CustomNavigationState extends State<SplashScreen>
         );
       }
     } catch (e) {
-      // Handle errors if needed
       print('Error checking authentication: $e');
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -96,75 +117,83 @@ class CustomNavigationState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
+      body: AnimatedBuilder(
+        animation: _backgroundAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF1565C0), // Dark blue
-                  Color(0xFF42A5F5), // Light blue
+                  _backgroundAnimation.value!,
+                  Colors.white,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Animated logo
-                FadeTransition(
-                  opacity: _opacityAnimation,
-                  child: AnimatedBuilder(
-                    animation: _logoScaleAnimation,
-                    builder: (context, child) => Transform.scale(
-                      scale: _logoScaleAnimation.value,
-                      child: Image.asset(
-                        widget.companyLogoPath,
-                        height: 150.0,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Animated logo
+                  FadeTransition(
+                    opacity: _opacityAnimation,
+                    child: AnimatedBuilder(
+                      animation: _logoScaleAnimation,
+                      builder: (context, child) => Transform.scale(
+                        scale: _logoScaleAnimation.value,
+                        child: Transform.rotate(
+                          angle: _logoRotationAnimation.value,
+                          child: Image.asset(
+                            widget.companyLogoPath,
+                            height: 150.0,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30.0),
+                  const SizedBox(height: 30.0),
 
-                // Animated company names
-                AnimatedSwitcher(
-                  duration: const Duration(seconds: 1),
-                  child: Text(
-                    widget.companyNames[_currentCompanyNameIndex],
-                    key: ValueKey<int>(_currentCompanyNameIndex),
-                    style: const TextStyle(
-                      fontSize: 36.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Arial',
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10.0,
-                          color: Colors.black54,
-                          offset: Offset(3.0, 3.0),
-                        ),
-                      ],
+                  // Animated company names
+                  AnimatedSwitcher(
+                    duration: const Duration(seconds: 1),
+                    child: Text(
+                      widget.companyNames[_currentCompanyNameIndex],
+                      key: ValueKey<int>(_currentCompanyNameIndex),
+                      style: const TextStyle(
+                        fontSize: 36.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Arial',
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10.0,
+                            color: Colors.black54,
+                            offset: Offset(3.0, 3.0),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 100.0),
 
-                const SizedBox(height: 100.0),
-
-                // Loading indicator
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ],
+                  // Custom Loading Indicator
+                  const SizedBox(
+                    width: 60.0,
+                    height: 60.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 6.0,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                      backgroundColor: Colors.black26,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
-} // need to upgrade the Splash Screen
-
-
+}
