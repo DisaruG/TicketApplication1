@@ -175,14 +175,14 @@ class CustomNavigationState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 100.0),
+                  const SizedBox(height: 80.0),
 
-                  // Custom Loading Indicator
+                  // Custom Loading Indicator (Smaller)
                   const SizedBox(
-                    width: 60.0,
-                    height: 60.0,
+                    width: 40.0,
+                    height: 40.0,
                     child: CircularProgressIndicator(
-                      strokeWidth: 6.0,
+                      strokeWidth: 4.0,
                       valueColor:
                       AlwaysStoppedAnimation<Color>(Colors.white),
                       backgroundColor: Colors.black26,
@@ -195,5 +195,5 @@ class CustomNavigationState extends State<SplashScreen>
         },
       ),
     );
-  }////
+  }
 }
