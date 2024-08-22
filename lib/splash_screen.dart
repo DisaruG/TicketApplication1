@@ -197,3 +197,4 @@ class CustomNavigationState extends State<SplashScreen>
     );
   }
 }
+// updates done
