@@ -115,7 +115,7 @@ class ContactsScreenState extends State<ContactsScreen> {
           ),
           prefixIcon: const Icon(Icons.search, color: Color(0xFF003366)), // Deep Navy Blue
           filled: true,
-          fillColor: Color(0xFFF4F4F4), // Soft Gray
+          fillColor: const Color(0xFFF4F4F4), // Soft Gray
         ),
       ),
     );
