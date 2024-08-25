@@ -33,7 +33,7 @@ class TaskDetailsScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            color: Color(0xFFF4F4F4), // Soft Gray
+            color: const Color(0xFFF4F4F4), // Soft Gray
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -60,7 +60,7 @@ class TaskDetailsScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Color(0xFF003366), // Deep Navy Blue
+                        backgroundColor: const Color(0xFF003366), // Deep Navy Blue
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
@@ -86,7 +86,7 @@ class TaskDetailsScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Color(0xFF008080), // Teal
+                        backgroundColor: const Color(0xFF008080), // Teal
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
