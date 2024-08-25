@@ -4,12 +4,10 @@ import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  final String companyLogoPath; // Path to the logo image
   final List<String> companyNames; // List of company names to cycle through
 
   const SplashScreen({
     super.key,
-    required this.companyLogoPath,
     required this.companyNames,
   });
 
@@ -20,8 +18,6 @@ class SplashScreen extends StatefulWidget {
 class CustomNavigationState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _logoScaleAnimation;
-  late Animation<double> _logoRotationAnimation;
   late Animation<double> _opacityAnimation;
   late Animation<Color?> _backgroundAnimation;
 
@@ -38,20 +34,6 @@ class CustomNavigationState extends State<SplashScreen>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
-    );
-
-    _logoScaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOut,
-      ),
-    );
-
-    _logoRotationAnimation = Tween<double>(begin: 0.0, end: 0.05).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
     );
 
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -116,42 +98,16 @@ class CustomNavigationState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.blue, // Set the plain color here
       body: AnimatedBuilder(
         animation: _backgroundAnimation,
         builder: (context, child) {
           return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  _backgroundAnimation.value!,
-                  Colors.white,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+            color: _backgroundAnimation.value, // Use plain color instead of gradient
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Animated logo
-                  FadeTransition(
-                    opacity: _opacityAnimation,
-                    child: AnimatedBuilder(
-                      animation: _logoScaleAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _logoScaleAnimation.value,
-                        child: Transform.rotate(
-                          angle: _logoRotationAnimation.value,
-                          child: Image.asset(
-                            widget.companyLogoPath,
-                            height: 150.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 30.0),
 
                   // Animated company names
@@ -197,4 +153,3 @@ class CustomNavigationState extends State<SplashScreen>
     );
   }
 }
-// updates done done
