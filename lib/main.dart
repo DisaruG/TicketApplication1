@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: const SplashScreen(
-          companyLogoPath: 'lib/assets/rdbbanklogo.jpg',
           companyNames: ['RDB Tickets'],
         ),
         routes: {
