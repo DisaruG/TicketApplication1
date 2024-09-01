@@ -20,7 +20,13 @@ class _TasksListScreenState extends State<TasksListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
+        stream: widget.searchQuery != null && widget.searchQuery!.isNotEmpty
+            ? FirebaseFirestore.instance
+            .collection('tickets')
+            .where('assignee', isEqualTo: widget.searchQuery)
+            .orderBy('timestamp', descending: true)
+            .snapshots()
+            : FirebaseFirestore.instance
             .collection('tickets')
             .orderBy('timestamp', descending: true)
             .snapshots(),
@@ -37,48 +43,35 @@ class _TasksListScreenState extends State<TasksListScreen> {
             );
           }
 
-          var tasks = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return {
-              'id': doc.id,
-              'subject': data['subject'] ?? 'No Subject',
-              'description': data['description'] ?? 'No Description',
-              'dueDate': data['dueDate'] ?? 'No Due Date',
-              'assignee': data['assignee'] ?? 'Unassigned',
-              'priority': data['priority'] ?? 'Low',
-              'status': data['status'] ?? 'Not Started',
-              'isRead': data['isRead'] ?? false,
-            };
-          }).toList();
-
-          if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
-            tasks = tasks.where((task) =>
-                task['assignee'].toLowerCase().contains(widget.searchQuery!.toLowerCase())).toList();
-          }
-
           return ListView.builder(
             padding: const EdgeInsets.all(8.0),
-            itemCount: tasks.length,
+            itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              var task = tasks[index];
+              var doc = snapshot.data!.docs[index];
+              var task = doc.data() as Map<String, dynamic>;
+              task['id'] = doc.id; // Add the document ID to the task map
+
               return GestureDetector(
                 onLongPress: () {
                   setState(() {
-                    _selectedTaskId = task['id']; // Set selected task ID on long press
+                    _selectedTaskId = task['id'] ?? ''; // Use empty string if id is null
                   });
                 },
                 child: Card(
-                  color: task['isRead'] == true ? const Color(0xFFF4F4F4) : const Color(0xFFE0F7FA),
+                  color: (task['isRead'] == true) ? const Color(0xFFF4F4F4) : const Color(0xFFE0F7FA),
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   elevation: 3.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                    leading: _getPriorityIcon(task['priority']),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    leading: _getPriorityIcon(task['priority'] ?? 'Low'), // Provide default value
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          task['assignee'],
+                          task['assignee'] ?? 'Unknown Assignee', // Provide default value
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -87,7 +80,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         ),
                         const SizedBox(height: 4.0),
                         Text(
-                          task['subject'],
+                          task['subject'] ?? 'No Subject', // Provide default value
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
@@ -96,10 +89,10 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         ),
                         const SizedBox(height: 4.0),
                         Text(
-                          'Due: ${task['dueDate']}',
+                          'Due: ${task['dueDate'] ?? 'No Due Date'}', // Provide default value
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF333333),
+                            color: Color(0xFF008080), // Teal
                           ),
                         ),
                       ],
@@ -108,26 +101,22 @@ class _TasksListScreenState extends State<TasksListScreen> {
                         ? IconButton(
                       icon: const Icon(CupertinoIcons.delete, color: Colors.red),
                       onPressed: () {
-                        _deleteTask(task['id']);
+                        _deleteTask(task['id'] ?? '');
                       },
                     )
-                        : _buildStatusChip(task['status']),
+                        : _buildStatusIcon(task['status'] ?? 'Not Started'), // Provide default value
                     onTap: () async {
                       if (_selectedTaskId == task['id']) {
-                        // If task is selected, reset selection
                         setState(() {
                           _selectedTaskId = null;
                         });
                       } else {
-                        // Print task data for debugging
                         print('Navigating to TaskDetailsScreen with task: $task');
-
                         await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
                         );
-
-                        _markTaskAsRead(task['id']);
+                        _markTaskAsRead(task['id'] ?? '');
                       }
                     },
                   ),
@@ -137,7 +126,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF003366),
         onPressed: () async {
           bool? isTaskCreated = await Navigator.push(
@@ -148,25 +137,31 @@ class _TasksListScreenState extends State<TasksListScreen> {
             setState(() {});
           }
         },
-        child: const Icon(CupertinoIcons.add, color: Colors.white),
+        icon: const Icon(CupertinoIcons.add, color: Colors.white),
+        label: const Text('New Task', style: TextStyle(color: Colors.white)),
       ),
     );
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusIcon(String status) {
     Color backgroundColor;
+    IconData statusIcon;
     switch (status) {
       case 'In Progress':
         backgroundColor = const Color(0xFF003366);
+        statusIcon = CupertinoIcons.arrow_2_circlepath;
         break;
       case 'Completed':
         backgroundColor = const Color(0xFF4CAF50);
+        statusIcon = CupertinoIcons.check_mark;
         break;
       case 'Not Started':
       default:
         backgroundColor = const Color(0xFFCCCCCC);
+        statusIcon = CupertinoIcons.time;
     }
     return Chip(
+      avatar: Icon(statusIcon, color: Colors.white, size: 18.0), // Adjusted icon size
       label: Text(
         status,
         style: const TextStyle(color: Colors.white),
