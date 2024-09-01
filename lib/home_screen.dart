@@ -8,17 +8,23 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  HomeScreenState createState() => HomeScreenState();     
+  HomeScreenState createState() => HomeScreenState();
 }
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const TasksListScreen(),
-    const ContactsScreen(),
-    const LogoutScreen(),
-  ];
+  late final List<Widget> _widgetOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = const <Widget>[
+      TasksListScreen(),
+      ContactsScreen(),
+      LogoutScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,20 +59,20 @@ class HomeScreenState extends State<HomeScreen> {
           },
         ),
       ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(10.0),
-        child: Container(
-          color: const Color(0xFFF4F4F4), // Soft Gray
-          height: 1.0,
+      bottom: const PreferredSize(
+        preferredSize: Size.fromHeight(10.0),
+        child: Divider(
+          color: Color(0xFFF4F4F4), // Soft Gray
+          thickness: 1.0,
         ),
       ),
     );
   }
 
   Widget buildContentArea() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: _widgetOptions.elementAt(_selectedIndex),
+    return IndexedStack(
+      index: _selectedIndex,
+      children: _widgetOptions,
     );
   }
 
@@ -90,7 +96,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> labels = ['Tasks', 'Contacts', 'Profile'];
+    final List<String> labels = const ['Tasks', 'Contacts', 'Profile'];
 
     return Container(
       decoration: BoxDecoration(
@@ -119,32 +125,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            width: isSelected ? 50.0 : 0.0,
-                            height: isSelected ? 25.0 : 0.0,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                          ),
-                          Icon(
-                            index == 0
-                                ? Icons.assignment
-                                : index == 1
-                                ? Icons.contacts
-                                : Icons.person,
-                            color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
-                            size: 24.0, // Adjust icon size
-                          ),
-                        ],
-                      ),
+                      buildNavIcon(isSelected, index),
                       const SizedBox(height: 4.0),
                       Text(
                         labels[index],
@@ -163,5 +144,41 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget buildNavIcon(bool isSelected, int index) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: isSelected ? 50.0 : 0.0,
+          height: isSelected ? 25.0 : 0.0,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF003366).withOpacity(0.1) // Light Deep Navy Blue
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+        ),
+        Icon(
+          _getNavIcon(index),
+          color: isSelected ? const Color(0xFF003366) : const Color(0xFF333333), // Deep Navy Blue / Charcoal Gray
+          size: 24.0, // Adjust icon size
+        ),
+      ],
+    );
+  }
+
+  IconData _getNavIcon(int index) {
+    switch (index) {
+      case 0:
+        return Icons.task;
+      case 1:
+        return Icons.contacts;
+      default:
+        return Icons.person;
+    }
   }
 }
