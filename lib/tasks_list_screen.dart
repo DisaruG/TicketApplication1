@@ -160,13 +160,13 @@ class _TasksListScreenState extends State<TasksListScreen> {
         backgroundColor = const Color(0xFFCCCCCC);
         statusIcon = CupertinoIcons.time;
     }
-    return Chip(
-      avatar: Icon(statusIcon, color: Colors.white, size: 18.0), // Adjusted icon size
-      label: Text(
-        status,
-        style: const TextStyle(color: Colors.white),
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
       ),
-      backgroundColor: backgroundColor,
+      child: Icon(statusIcon, color: Colors.white, size: 24.0), // Adjusted icon size
     );
   }
 
@@ -230,4 +230,3 @@ class _TasksListScreenState extends State<TasksListScreen> {
     }
   }
 }
-//ll
