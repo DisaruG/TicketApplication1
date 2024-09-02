@@ -14,7 +14,7 @@ class TasksListScreen extends StatefulWidget {
 }
 
 class _TasksListScreenState extends State<TasksListScreen> {
-  String? _selectedTaskId; // State variable to track selected task ID
+  final ValueNotifier<String?> _selectedTaskIdNotifier = ValueNotifier<String?>(null);
 
   @override
   Widget build(BuildContext context) {
@@ -53,76 +53,79 @@ class _TasksListScreenState extends State<TasksListScreen> {
               var task = tasks[index].data() as Map<String, dynamic>;
               task['id'] = tasks[index].id; // Add the document ID to the task map
 
-              return GestureDetector(
-                onLongPress: () {
-                  setState(() {
-                    _selectedTaskId = task['id'] ?? ''; // Use empty string if id is null
-                  });
-                },
-                child: Card(
-                  color: (task['isRead'] == true) ? const Color(0xFFF4F4F4) : const Color(0xFFE0F7FA),
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  elevation: 3.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    leading: _getPriorityIcon(task['priority'] ?? 'Low'), // Provide default value
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task['assignee'] ?? 'Unknown Assignee', // Provide default value
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Color(0xFF003366),
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          task['subject'] ?? 'No Subject', // Provide default value
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                            color: Color(0xFF333333),
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          'Due: ${task['dueDate'] ?? 'No Due Date'}', // Provide default value
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF008080), // Teal
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: _selectedTaskId == task['id']
-                        ? IconButton(
-                      icon: const Icon(CupertinoIcons.delete, color: Colors.red),
-                      onPressed: () {
-                        _deleteTask(task['id'] ?? '');
-                      },
-                    )
-                        : _buildStatusIcon(task['status'] ?? 'Not Started'), // Provide default value
-                    onTap: () async {
-                      if (_selectedTaskId == task['id']) {
-                        setState(() {
-                          _selectedTaskId = null;
-                        });
-                      } else {
-                        print('Navigating to TaskDetailsScreen with task: $task');
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
-                        );
-                        _markTaskAsRead(task['id'] ?? '');
-                      }
+              return ValueListenableBuilder<String?>(
+                valueListenable: _selectedTaskIdNotifier,
+                builder: (context, selectedTaskId, child) {
+                  final isSelected = selectedTaskId == task['id'];
+
+                  return GestureDetector(
+                    onLongPress: () {
+                      _selectedTaskIdNotifier.value = task['id'] ?? '';
                     },
-                  ),
-                ),
+                    child: Card(
+                      color: (task['isRead'] == true) ? const Color(0xFFF4F4F4) : const Color(0xFFE0F7FA),
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      elevation: 3.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        leading: _getPriorityIcon(task['priority'] ?? 'Low'), // Provide default value
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              task['assignee'] ?? 'Unknown Assignee', // Provide default value
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF003366),
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              task['subject'] ?? 'No Subject', // Provide default value
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                color: Color(0xFF333333),
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              'Due: ${task['dueDate'] ?? 'No Due Date'}', // Provide default value
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF008080), // Teal
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: isSelected
+                            ? IconButton(
+                          icon: const Icon(CupertinoIcons.delete_simple, color: Colors.red),
+                          onPressed: () {
+                            _deleteTask(task['id'] ?? '');
+                          },
+                        )
+                            : _buildStatusIcon(task['status'] ?? 'Not Started'), // Provide default value
+                        onTap: () async {
+                          if (isSelected) {
+                            _selectedTaskIdNotifier.value = null; // Deselect task
+                          } else {
+                            print('Navigating to TaskDetailsScreen with task: $task');
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => TaskDetailsScreen(task: task)),
+                            );
+                            _markTaskAsRead(task['id'] ?? '');
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
@@ -222,13 +225,17 @@ class _TasksListScreenState extends State<TasksListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Task deleted successfully')),
       );
-      setState(() {
-        _selectedTaskId = null; // Reset selection after deletion
-      });
+      _selectedTaskIdNotifier.value = null; // Reset selection after deletion
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error deleting task')),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _selectedTaskIdNotifier.dispose(); // Dispose the notifier to free resources
+    super.dispose();
   }
 }
