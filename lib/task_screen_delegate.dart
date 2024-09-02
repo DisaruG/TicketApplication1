@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'tasks_list_screen.dart';
 
-class TicketSearchDelegate extends SearchDelegate<String> {
+class TicketSearchDelegate extends SearchDelegate<String?> {
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -20,7 +19,7 @@ class TicketSearchDelegate extends SearchDelegate<String> {
     return IconButton(
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
-        Navigator.pop(context); // Close the search page
+        close(context, null); // Close the search page and pass null
       },
     );
   }
@@ -36,7 +35,7 @@ class TicketSearchDelegate extends SearchDelegate<String> {
   }
 
   Widget _buildSearchResults(BuildContext context) {
+    // Use the search query to filter tasks in TasksListScreen
     return TasksListScreen(searchQuery: query);
   }
 }
-//jnujububuub
