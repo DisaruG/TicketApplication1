@@ -20,13 +20,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
-        stream: widget.searchQuery != null && widget.searchQuery!.isNotEmpty
-            ? FirebaseFirestore.instance
-            .collection('tickets')
-            .where('assignee', isEqualTo: widget.searchQuery)
-            .orderBy('timestamp', descending: true)
-            .snapshots()
-            : FirebaseFirestore.instance
+        stream: FirebaseFirestore.instance
             .collection('tickets')
             .orderBy('timestamp', descending: true)
             .snapshots(),
@@ -43,13 +37,21 @@ class _TasksListScreenState extends State<TasksListScreen> {
             );
           }
 
+          // Filter tasks based on the search query
+          final tasks = snapshot.data!.docs.where((doc) {
+            final task = doc.data() as Map<String, dynamic>;
+            final subject = task['subject']?.toLowerCase() ?? '';
+            final assignee = task['assignee']?.toLowerCase() ?? '';
+            final query = widget.searchQuery?.toLowerCase() ?? '';
+            return subject.contains(query) || assignee.contains(query);
+          }).toList();
+
           return ListView.builder(
             padding: const EdgeInsets.all(8.0),
-            itemCount: snapshot.data!.docs.length,
+            itemCount: tasks.length,
             itemBuilder: (context, index) {
-              var doc = snapshot.data!.docs[index];
-              var task = doc.data() as Map<String, dynamic>;
-              task['id'] = doc.id; // Add the document ID to the task map
+              var task = tasks[index].data() as Map<String, dynamic>;
+              task['id'] = tasks[index].id; // Add the document ID to the task map
 
               return GestureDetector(
                 onLongPress: () {
