@@ -12,7 +12,20 @@
           "package_name": "com.example.ticketapplication"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "502594603175-jl4l9sr25ddaofe57jcqvja8ren33ta5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ticketapplication",
+            "certificate_hash": "af13b9b8002525b3d997eb8872a7b998f9a34a59"
+          }
+        },
+        {
+          "client_id": "502594603175-su966qktvm2qo73p996jsu9j8qiceimt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD-89KBZOWLt1GxBG-HI5Q2_sPWspjpdfw"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502594603175-su966qktvm2qo73p996jsu9j8qiceimt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "502594603175-tasihdctcqfpr8eug5e9jcf412jlf296.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ticketapplication"
+              }
+            }
+          ]
         }
       }
     }
