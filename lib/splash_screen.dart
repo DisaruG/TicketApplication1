@@ -18,7 +18,6 @@ class SplashScreen extends StatefulWidget {
 class CustomNavigationState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
   late Animation<Color?> _backgroundAnimation;
 
   int _currentCompanyNameIndex = 0;
@@ -36,12 +35,6 @@ class CustomNavigationState extends State<SplashScreen>
       duration: const Duration(seconds: 3),
     );
 
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
 
     _backgroundAnimation = ColorTween(
       begin: Colors.blue.shade700,
