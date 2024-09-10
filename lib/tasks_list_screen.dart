@@ -71,7 +71,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                        leading: _getPriorityIcon(task['priority'] ?? 'Low'), // Provide default value
+                        leading: _getPriorityIcon(task['priority'] ?? 'Low'), // Show priority icon
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -94,7 +94,7 @@ class _TasksListScreenState extends State<TasksListScreen> {
                             ),
                             const SizedBox(height: 4.0),
                             Text(
-                              'Due: ${task['dueDate'] ?? 'No Due Date'}', // Provide default value
+                              'Priority: ${task['priority'] ?? 'Low'}', // Display priority
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF008080), // Teal
@@ -166,12 +166,12 @@ class _TasksListScreenState extends State<TasksListScreen> {
         statusIcon = CupertinoIcons.time;
     }
     return Container(
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(2.0), // Reduced padding
       decoration: BoxDecoration(
         color: backgroundColor,
         shape: BoxShape.circle,
       ),
-      child: Icon(statusIcon, color: Colors.white, size: 24.0), // Adjusted icon size
+      child: Icon(statusIcon, color: Colors.white, size: 18.0), // Adjusted icon size
     );
   }
 
