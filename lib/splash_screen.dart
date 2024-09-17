@@ -69,22 +69,33 @@ class SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkUserAuthentication() async {
     try {
+      // Capture the current BuildContext
+      final context = this.context;
+
       await Future.delayed(const Duration(seconds: 2));
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
       } else {
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      // Log the error or remove print in production
+      // Use logging package like 'logger' instead of print in production
+      debugPrint('Error checking authentication: $e');
+      if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
-    } catch (e) {
-      print('Error checking authentication: $e');
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
     }
   }
 
@@ -119,14 +130,14 @@ class SplashScreenState extends State<SplashScreen>
                     child: Container(
                       width: 120.0,
                       height: 120.0,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 15.0,
-                            offset: const Offset(0, 10),
+                            offset: Offset(0, 10),
                           ),
                         ],
                       ),
@@ -169,9 +180,9 @@ class SplashScreenState extends State<SplashScreen>
                   // Loading spinner with fade-in effect
                   FadeTransition(
                     opacity: _fadeInAnimation,
-                    child: CircularProgressIndicator(
+                    child: const CircularProgressIndicator(
                       strokeWidth: 4.0,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
                 ],
