@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => UserProvider(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'RDB Tickets',
         theme: ThemeData(
           primarySwatch: Colors.blue,
