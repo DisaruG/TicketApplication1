@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
-import 'package:flutter/cupertino.dart'; // Ensure this line is present
 
 class SplashScreen extends StatefulWidget {
   final List<String> companyNames; // List of company names to cycle through
@@ -16,13 +15,11 @@ class SplashScreen extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
-  late AnimationController _backgroundController;
-  late Animation<Color?> _backgroundAnimation;
-  late AnimationController _nameController;
-  late AnimationController _loadingController;
-  late Animation<double> _loadingAnimation;
-  late Animation<double> _fadeAnimation;
+class SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _logoController;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeInAnimation;
 
   int _currentCompanyNameIndex = 0;
 
@@ -30,71 +27,49 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
   void initState() {
     super.initState();
     _initializeAnimations();
-    _backgroundController.forward().then((_) => _startNameTransition());
+    _fadeController.forward().then((_) => _startNameTransition());
   }
 
   void _initializeAnimations() {
-    _backgroundController = AnimationController(
+    _logoController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5), // Background animation duration
-    )..repeat(reverse: true);
-
-    _backgroundAnimation = ColorTween(
-      begin: Colors.deepPurple.shade800,
-      end: Colors.teal.shade700,
-    ).animate(
-      CurvedAnimation(
-        parent: _backgroundController,
-        curve: Curves.linear,
-      ),
+      duration: const Duration(seconds: 3),
     );
 
-    _nameController = AnimationController(
+    _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600), // Duration for name animation
+      duration: const Duration(seconds: 2),
     );
 
-    _loadingController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200), // Duration for loading animation
-    )..repeat();
-
-    _loadingAnimation = Tween<double>(begin: 0, end: 1).animate(
+    _fadeInAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
-        parent: _loadingController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _nameController,
+        parent: _fadeController,
         curve: Curves.easeIn,
       ),
     );
   }
 
   void _startNameTransition() {
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _currentCompanyNameIndex =
             (_currentCompanyNameIndex + 1) % widget.companyNames.length;
       });
-      _nameController.forward().then((_) {
-        _nameController.reverse().then((_) {
-          if (_currentCompanyNameIndex < widget.companyNames.length - 1) {
+      _fadeController.forward().then((_) {
+        if (_currentCompanyNameIndex == widget.companyNames.length - 1) {
+          _checkUserAuthentication();
+        } else {
+          _fadeController.reverse().then((_) {
             _startNameTransition();
-          } else {
-            _checkUserAuthentication();
-          }
-        });
+          });
+        }
       });
     });
   }
 
   Future<void> _checkUserAuthentication() async {
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         Navigator.of(context).pushReplacement(
@@ -115,9 +90,8 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
 
   @override
   void dispose() {
-    _backgroundController.dispose();
-    _nameController.dispose();
-    _loadingController.dispose();
+    _logoController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -125,83 +99,79 @@ class SplashScreenState extends State<SplashScreen> with TickerProviderStateMixi
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedBuilder(
-        animation: _backgroundAnimation,
+        animation: _fadeInAnimation,
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [_backgroundAnimation.value!, Colors.blue.shade100],
+                colors: [Colors.deepPurple.shade800, Colors.teal.shade400],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                stops: const [0.0, 1.0],
               ),
             ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Animated company names with fade transition
+                  // Fade-in Company Logo
                   FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, -0.5),
-                        end: Offset.zero,
-                      ).animate(_nameController),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300), // Faster transition for company names
-                        child: Text(
-                          widget.companyNames[_currentCompanyNameIndex],
-                          key: ValueKey<int>(_currentCompanyNameIndex),
-                          style: const TextStyle(
-                            fontSize: 36.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 10.0,
-                                color: Colors.black54,
-                                offset: Offset(3.0, 3.0),
-                              ),
-                            ],
+                    opacity: _fadeInAnimation,
+                    child: Container(
+                      width: 120.0,
+                      height: 120.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 15.0,
+                            offset: const Offset(0, 10),
                           ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Image.asset(
+                          'lib/assets/rdbbanklogo.jpg', // Add your logo image here
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 60.0), // Adjusted spacing
+                  const SizedBox(height: 40.0),
 
-                  // Custom Professional Loading Animation
-                  SizedBox(
-                    width: 60.0,
-                    height: 60.0,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          value: _loadingAnimation.value,
-                          strokeWidth: 6.0,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                          backgroundColor: Colors.black26,
-                        ),
-                        Positioned(
-                          child: RotationTransition(
-                            turns: _loadingController,
-                            child: Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.3),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                CupertinoIcons.refresh,
-                                color: Colors.white,
-                                size: 30.0,
-                              ),
+                  // Company Name with smooth fade and slide transition
+                  FadeTransition(
+                    opacity: _fadeInAnimation,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(seconds: 2),
+                      child: Text(
+                        widget.companyNames[_currentCompanyNameIndex],
+                        key: ValueKey<int>(_currentCompanyNameIndex),
+                        style: const TextStyle(
+                          fontSize: 36.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: Colors.black54,
+                              offset: Offset(3.0, 3.0),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 60.0),
+
+                  // Loading spinner with fade-in effect
+                  FadeTransition(
+                    opacity: _fadeInAnimation,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4.0,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   ),
                 ],
